@@ -1,12 +1,12 @@
 # Projectgegevens
 
-**VOORNAAM NAAM:** A B
+**VOORNAAM NAAM:** Yoran Wandels
 
-**Sparringpartner:** C D
+**Sparringpartner:** Sarkis Mukoyan
 
-**Projectsamenvatting in max 10 woorden:** E
+**Projectsamenvatting in max 10 woorden:** Een proteine shake dispenser met bediening via website en hardware
 
-**Projecttitel:** F
+**Projecttitel:** Musclefuel dispenser
 
 # Tips voor feedbackgesprekken
 
