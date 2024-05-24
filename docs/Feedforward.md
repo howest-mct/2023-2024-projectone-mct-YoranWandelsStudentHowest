@@ -60,7 +60,7 @@ Dit is de feedback op mijn vragen.
 
     - zorgen dat de 2 stappenmotors niet tegelijk werken
 
-    - een weerstand op de transistor voor de waterpomp begin met 1k ohm en als het te traag pompt veranderen met 100ohm
+    - een weerstand op de transistor voor de waterpomp, begin met 1k ohm en als het te traag pompt veranderen met 100 ohm
 
 - feedback 2:
 
