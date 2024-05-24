@@ -32,17 +32,40 @@
 
 # Feedforward gesprekken
 
-## Gesprek 1 (Datum: xx/xx/2024)
+## Gesprek 1 (Datum: 5/24/2024)
 
-Lector:
+Lector: Tijn
 
 Vragen voor dit gesprek:
 
-- vraag 1: V
+- vraag 1:
+
+    - Reflectie van mijn fritzing schema
+
+- vraag 2:
+
+    - Reflectie van mijn lasercut design
 
 Dit is de feedback op mijn vragen.
 
-- feedback 1: G
+- feedback 1:
+
+    - geen mcp gebruiken, ik zou moeten genoeg gpio pins hebben
+
+    - 1k ohm voor de button
+
+    - rotary encoder op 3.3v en niet 5v
+
+    - een ground voor de pcf
+
+    - zorgen dat de 2 stappenmotors niet tegelijk werken
+
+    - een weerstand op de transistor voor de waterpomp begin met 1k ohm en als het te traag pompt veranderen met 100ohm
+
+- feedback 2:
+
+    - nog tanden toevoegen aan de lasercut design deepnest gebruiken om de onderdelen zo efficient mogelijk te plaatsen
+
 
 ## Gesprek 2 (Datum: xx/xx/2024)
 
