@@ -4,6 +4,6 @@
 
 **Sparringpartner:** Sarkis Mukoyan
 
-**Projectsamenvatting in max 10 woorden:** Een proteine shake dispenser met bediening via website en hardware
+**Projectsamenvatting in max 10 woorden:** Een proteine shake dispenser met bediening 
 
 **Projecttitel:** Musclefuel dispenser
