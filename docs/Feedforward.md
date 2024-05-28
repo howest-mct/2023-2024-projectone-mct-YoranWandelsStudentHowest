@@ -67,17 +67,22 @@ Dit is de feedback op mijn vragen.
     - nog tanden toevoegen aan de lasercut design deepnest gebruiken om de onderdelen zo efficient mogelijk te plaatsen
 
 
-## Gesprek 2 (Datum: xx/xx/2024)
+## Gesprek 2 (Datum: 5/24/2024)
 
-Lector:
+Lector: Frederik
 
 Vragen voor dit gesprek:
 
-- vraag 1: V
+- vraag 1: Reflectie schema database
 
 Dit is de feedback op mijn vragen.
 
-- feedback 1: G
+- feedback 1:
+
+    - extra tabel gebruikers om te kunnen weten wie welke doseringen neemt
+
+    - geen extra tabel voor de shakes bij te houden want heb je al in historiek
+
 
 ## Gesprek 3 (Datum: xx/xx/2024)
 
@@ -85,7 +90,7 @@ Lector:
 
 Vragen voor dit gesprek:
 
-- [x] vraag 1: V
+- vraag 1: V
 
 Dit is de feedback op mijn vragen.
 
