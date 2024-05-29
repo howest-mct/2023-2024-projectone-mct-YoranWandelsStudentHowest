@@ -3,8 +3,8 @@ import time
 
 class StepperMotor:
     # Pin configuratie
-    def __init__(self) -> None:
-        self.pins = [5, 6, 13, 19]
+    def __init__(self, pins) -> None:
+        self.pins = pins
         GPIO.setmode(GPIO.BCM)
         for pin in self.pins:
             GPIO.setup(pin, GPIO.OUT)
@@ -32,34 +32,31 @@ class StepperMotor:
 
     # Draai naar rechts
     def draaien_rechts(self):
-        global theStep
         for i in range(4096):
-            self.do_step(theStep)
-            theStep = (theStep + 1) % 8
+            self.do_step(self.theStep)
+            self.theStep = (self.theStep + 1) % 8
 
     # Draai naar rechts met een bepaald aantal graden
     def draaien_rechts_graden(self, graden):
-        global theStep
         stappen = int(graden * (4096 / 360))
         print("Graden_Rechts:", graden)
         print("Stappen_Rechts:", stappen)
         for i in range(stappen):
-            self.do_step(theStep)
-            theStep = (theStep + 1) % 8
+            self.do_step(self.theStep)
+            self.theStep = (self.theStep + 1) % 8
 
     # Draai naar links
     def draaien_links(self):
         global theStep
         for i in range(4096):
-            self.do_step(theStep)
-            theStep = (theStep - 1) % 8
+            self.do_step(self.theStep)
+            self.theStep = (self.theStep - 1) % 8
 
     # Draai naar links met een bepaald aantal graden
     def draaien_links_graden(self, graden):
-        global theStep
         stappen = int(graden * (4096 / 360))
         print("Graden_Links:", graden)
         print("Stappen_Links:", stappen)
         for i in range(stappen):
-            self.do_step(theStep)
-            theStep = (theStep - 1) % 8
+            self.do_step(self.theStep)
+            self.theStep = (self.theStep - 1) % 8

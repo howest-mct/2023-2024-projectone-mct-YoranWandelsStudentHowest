@@ -4,9 +4,11 @@ from helpers.HC_SR04 import HC_SR04
 from helpers.PCF import PCF
 from helpers.LCD import LCD
 from helpers.RotaryEncoder import rotaryEncoder
+from helpers.StepperMotor import StepperMotor
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
+
 
 # LCD
 rs = 21
@@ -28,8 +30,16 @@ switch = 23
 dt = 24
 clk = 25
 
-# Definieer je HC-SR04 klasse
+# button
+btn = 18
 
+def my_callback_one(pin):
+    print('button click')
+
+GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+GPIO.add_event_detect(btn, GPIO.RISING, bouncetime=200)
+GPIO.add_event_callback(btn, my_callback_one)
 
 if __name__ == '__main__':
     try:
@@ -37,14 +47,18 @@ if __name__ == '__main__':
         # Instantiate HC_SR04 with the appropriate GPIO pins
         watersensor = HC_SR04(trig1, echo1)
         bottlesensor = HC_SR04(trig2, echo2)
+
         rotary = rotaryEncoder(switch, dt, clk)
 
         pcf = PCF(sda, scl, adres)
         lcd = LCD(rs, enable, pcf)
+
+        Proteinmotor = StepperMotor([6, 13, 19, 26])
+        Creatinemotor = StepperMotor([5, 17, 27, 22])
+        Proteinmotor.draaien_links()
         
         lcd.clear_display()
         lcd.write_message('hey')
-        print('test')
         while True:
             waterdist = watersensor.distance()
             print(f"Measured Distance: {waterdist:.2f} cm")
@@ -52,18 +66,6 @@ if __name__ == '__main__':
             bottledist = bottlesensor.distance()
             print(f"Measured Distance: {bottledist:.2f} cm")
             time.sleep(1)  # Sleep for 1 second before next measurement
-
-            command = input("Voer commando in: ")
-            if command == "toerlinks":
-                draaien_links()
-            elif command == "toerrechts":
-                draaien_rechts()
-            elif command.startswith("X"):
-                graden = int(command[1:])
-                draaien_rechts_graden(graden)
-            elif command.startswith("-X"):
-                graden = int(command[2:])
-                draaien_links_graden(graden)
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:
