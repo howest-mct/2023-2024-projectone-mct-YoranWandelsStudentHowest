@@ -11,24 +11,20 @@ class DataRepository:
         return gegevens
 
     @staticmethod
-    def read_status_lampen():
-        sql = "SELECT * from lampen"
-        return Database.get_rows(sql)
-
-    @staticmethod
-    def read_status_lamp_by_id(id):
-        sql = "SELECT * from lampen WHERE id = %s"
-        params = [id]
-        return Database.get_one_row(sql, params)
-
-    @staticmethod
-    def update_status_lamp(id, status):
-        sql = "UPDATE lampen SET status = %s WHERE id = %s"
-        params = [status, id]
+    def create_historiek(deviceid, gebruikerid, actiedatum, waarde, commentaar):
+        sql = "INSERT INTO historiek (DeviceID, GebruikerID, Actiedatum, Waarde, Commentaar) VALUES \
+        (%s,%s,%s,%s,%s)"
+        params = [deviceid, gebruikerid, actiedatum, waarde, commentaar]
         return Database.execute_sql(sql, params)
 
-    @staticmethod
-    def update_status_alle_lampen(status):
-        sql = "UPDATE lampen SET status = %s"
-        params = [status]
+    def get_id_sensor(beschrijving):
+        sql = "SELECT DeviceID FROM device where beschrijving = %s;"
+        params = [beschrijving]
+        return Database.get_one_row(sql,params)
+    
+    def create_gebruiker(gebruikersnaam, wachtwoord, email, voornaam, achternaam, geboortedatum, rol, accountstatus, aanmaakdatum, laatstingelogd):
+        sql = "INSERT INTO gebruiker (GebruikerID, Gebruikersnaam, Wachtwoord, Email, Voornaam, Achternaam, Geboortedatum, Rol, AccountStatus, Aanmaakdatum, LaatstIngelogd) VALUES \
+        (%s,%s,%s,%s,%s)"
+        params = [gebruikersnaam, wachtwoord, email, voornaam, achternaam, geboortedatum, rol, accountstatus, aanmaakdatum, laatstingelogd]
         return Database.execute_sql(sql, params)
+
