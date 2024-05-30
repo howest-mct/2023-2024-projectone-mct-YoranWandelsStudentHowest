@@ -22,7 +22,7 @@ CORS(app)
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-
+# Define GPIO pins
 # LCD
 rs = 21
 enable = 20
@@ -50,73 +50,71 @@ btn = 18
 clck = 15
 dt = 14
 
+stop_threads = False
+RotaryCounter = 0
+
 # API ENDPOINTS
 @app.route('/')
 def hallo():
     return "Server is running, er zijn momenteel geen API endpoints beschikbaar."
 
-
 # SOCKET IO
 @socketio.on('connect')
 def initial_connection():
     print('A new client connect')
-    # # Send to the client!
-    # vraag de status op van de lampen uit de DB
-    # status = DataRepository.read_status_lampen()
-    # # socketio.emit('B2F_status_lampen', {'lampen': status})
-    # # Beter is het om enkel naar de client te sturen die de verbinding heeft gemaakt.
-    # emit('B2F_status_lampen', {'lampen': status}, broadcast=False)
 
 def all_out():
+    GPIO.setmode(GPIO.BCM)  # Ensure correct pin numbering mode within the thread
     time_all_out = time.time()
     print('test all_out')
-    while True:
+    while not stop_threads:
         if (time.time() - time_all_out) >= 5:
-            idwatersensor = DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat')
+            idwatersensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
             current_datetime = datetime.datetime.now()
-            createhistoriek = DataRepository.create_historiek(idwatersensor, 1, actiedatum, waarde, commentaar)
-
+            waterdist = round(watersensor.distance(), 2)
+            print(f"Water distance: {waterdist} at {current_datetime}")
+            create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
+            if create_historiek:
+                print('New history entry created successfully.')
+            time_all_out = time.time()
 
 def start_thread():
-    # wait 10s with sleep sintead of threading.Timer
-    threading.Timer(10, all_out).start()
+    thread = threading.Thread(target=all_out)
+    thread.start()
+    return thread
 
 def my_callback_one(pin):
     print('button click')
 
 GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
 GPIO.add_event_detect(btn, GPIO.RISING, bouncetime=200)
 GPIO.add_event_callback(btn, my_callback_one)
 
 if __name__ == '__main__':
     try:
         print("**** Starting HC-SR04 Distance Measurement ****")
-        socketio.run(app, debug=False, host='0.0.0.0')
         # Instantiate HC_SR04 with the appropriate GPIO pins
         watersensor = HC_SR04(trig1, echo1)
         bottlesensor = HC_SR04(trig2, echo2)
 
         rotary = rotaryEncoder(switch, dt, clk)
-
         pcf = PCF(sda, scl, adres)
         lcd = LCD(rs, enable, pcf)
 
         Proteinmotor = StepperMotor([6, 13, 19, 26])
         Creatinemotor = StepperMotor([5, 17, 27, 22])
-        Proteinmotor.draaien_links()
-        
+        # Proteinmotor.draaien_links()
+
         lcd.clear_display()
         lcd.write_message('hey')
+        # thread = start_thread()
+        socketio.run(app, debug=False, host='0.0.0.0')
         while True:
-            waterdist = watersensor.distance()
-            print(f"Measured Distance: {waterdist:.2f} cm")
-
-            bottledist = bottlesensor.distance()
-            print(f"Measured Distance: {bottledist:.2f} cm")
-            time.sleep(1)  # Sleep for 1 second before next measurement
+            print(rotaryEncoder.counter())
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:
-        print("Cleaning up GPIO")
+        print("Stopping threads and cleaning up GPIO")
+        stop_threads = True
+        # thread.join()  # Ensure the thread has completed
         GPIO.cleanup()

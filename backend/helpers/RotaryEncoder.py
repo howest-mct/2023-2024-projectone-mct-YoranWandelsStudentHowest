@@ -20,17 +20,19 @@ class rotaryEncoder:
     def rotation_callback(self, pin):
         dt_val = gpio.input(self.dt)
         clk_val = gpio.input(self.clk)
-        # print(dt_val, " ", clk_val)
 
         if clk_val!= self.clkLastState and clk_val == False:
             if dt_val != clk_val:
-                print("Rechts")
                 self.counter += 1
             else:
-                print("Links")
                 self.counter -= 1
-            print(self.counter)
+            print(self.counter % 3)
         self.clkLastState = clk_val
 
+    # @property
+    # def counter(self):
+    #     counter = self.counter
+    #     return counter
+
     def switch_callback(self, sw):
-        print("btn press")
+        print("rotary switch")
