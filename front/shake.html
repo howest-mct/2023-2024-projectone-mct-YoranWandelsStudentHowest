@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a Shake - Protein Shake Dispenser</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="make-shake.html">Make a Shake</a>
+            <a href="logout.html">Logout</a>
+        </nav>
+      </header>
+    <main>
+        <h2>Make Your Shake</h2>
+        <form id="shake-form">
+            <label for="protein-amount">Protein (g)</label>
+            <input type="number" id="protein-amount" name="protein-amount" min="0" required>
+            
+            <label for="creatine-amount">Creatine (g)</label>
+            <input type="number" id="creatine-amount" name="creatine-amount" min="0" required>
+            
+            <label for="water-amount">Water (ml)</label>
+            <input type="number" id="water-amount" name="water-amount" min="0" required>
+            
+            <button type="submit">Create Shake</button>
+        </form>
+    </main>
+</body>
+</html>
