@@ -22,9 +22,14 @@ class DataRepository:
         params = [beschrijving]
         return Database.get_one_row(sql,params)
     
+    def read_historiek():
+        sql = "SELECT * FROM historiek"
+        return Database.get_one_row(sql)
+    
     def create_gebruiker(gebruikersnaam, wachtwoord, email, voornaam, achternaam, geboortedatum, rol, accountstatus, aanmaakdatum, laatstingelogd):
         sql = "INSERT INTO gebruiker (GebruikerID, Gebruikersnaam, Wachtwoord, Email, Voornaam, Achternaam, Geboortedatum, Rol, AccountStatus, Aanmaakdatum, LaatstIngelogd) VALUES \
         (%s,%s,%s,%s,%s)"
         params = [gebruikersnaam, wachtwoord, email, voornaam, achternaam, geboortedatum, rol, accountstatus, aanmaakdatum, laatstingelogd]
         return Database.execute_sql(sql, params)
+
 

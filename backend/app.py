@@ -9,9 +9,11 @@ from helpers.StepperMotor import StepperMotor
 from helpers.HX711 import HX711
 import threading
 from repositories.DataRepository import DataRepository
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
+
+endpoint = '/api/v1'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Sc3pTr0n3'
@@ -51,8 +53,8 @@ btn = 18
 hx1_clck = 15
 hx1_dt = 14
 
-hx2_clck = 7
-hx2_dt = 8
+hx2_clck = 8
+hx2_dt = 7
 
 
 stop_threads = False
@@ -62,6 +64,15 @@ RotaryCounter = 0
 @app.route('/')
 def hallo():
     return "Server is running, er zijn momenteel geen API endpoints beschikbaar."
+
+@app.route(endpoint + '/historiek/', methods=['GET'])
+def get_bestemmingen():
+    if request.method == 'GET':
+        historiek = DataRepository.read_historiek()
+        if historiek is not None:
+            return jsonify(historiek=historiek), 200
+        else:
+            return jsonify(message='error'), 404
 
 # SOCKET IO
 @socketio.on('connect')
@@ -86,21 +97,21 @@ def send_data_bottlesensor():
     if create_historiek:
         print('New history entry created successfully.')
 
-# def send_data_proteinweight():
-#     idproteinweight = (DataRepository.get_id_sensor('Gewicht meten van de proteine'))['DeviceID']
-#     current_datetime = datetime.datetime.now()
-#     proteinweight = hx_protein.get_data_mean()
-#     print(f"Protein Weight: {proteinweight} at {current_datetime}")
-#     create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, proteinweight, 'protein weight test')
-#     if create_historiek:
-#         print('New history entry created successfully.')
+def send_data_proteinweight():
+    idproteinweight = (DataRepository.get_id_sensor('Gewicht meten van de proteine'))['DeviceID']
+    current_datetime = datetime.datetime.now()
+    proteinweight = hx_protein.get_data_mean()
+    print(f"Protein Weight: {proteinweight} at {current_datetime}")
+    create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, proteinweight, 'protein weight test')
+    if create_historiek:
+        print('New history entry created successfully.')
 
 # def send_data_creatineweight():
-#     idproteinweight = (DataRepository.get_id_sensor('Gewicht meten van de creatine'))['DeviceID']
+#     idcreateineweight = (DataRepository.get_id_sensor('Gewicht meten van de creatine'))['DeviceID']
 #     current_datetime = datetime.datetime.now()
 #     creatineweight = hx_creatine.get_data_mean()
 #     print(f"Creatine Weight: {creatineweight} at {current_datetime}")
-#     create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, creatineweight, 'creatine weight test')
+#     create_historiek = DataRepository.create_historiek(idcreateineweight, 1, current_datetime, creatineweight, 'creatine weight test')
 #     if create_historiek:
 #         print('New history entry created successfully.')
 
@@ -109,11 +120,11 @@ def all_out():
     time_all_out = time.time()
     print('test all_out')
     while not stop_threads:
-        if (time.time() - time_all_out) >= 5:
+        if (time.time() - time_all_out) >= 100:
             send_data_watersensor()
             send_data_bottlesensor()
             send_data_proteinweight()
-            send_data_creatineweight()
+            # send_data_creatineweight()
             time_all_out = time.time()
 
 def start_thread():
@@ -144,15 +155,15 @@ if __name__ == '__main__':
 
         hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
         hx_protein.zero()
-        hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
-        hx_creatine.zero()
+        # hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
+        # hx_creatine.zero()
 
         # proteinweight = hx_protein.get_data_mean()
         # print(proteinweight)
         # creatineweight = hx_creatine.get_data_mean()
         # print(creatineweight)
 
-        # thread = start_thread()
+        thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')
         while True:
             pass
@@ -161,5 +172,5 @@ if __name__ == '__main__':
     finally:
         print("Stopping threads and cleaning up GPIO")
         stop_threads = True
-        # thread.join()  # Ensure the thread has completed
+        thread.join()  # Ensure the thread has completed
         GPIO.cleanup()
