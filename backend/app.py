@@ -6,6 +6,7 @@ from helpers.PCF import PCF
 from helpers.LCD import LCD
 from helpers.RotaryEncoder import rotaryEncoder
 from helpers.StepperMotor import StepperMotor
+from helpers.HX711 import HX711
 import threading
 from repositories.DataRepository import DataRepository
 from flask import Flask, jsonify
@@ -47,8 +48,12 @@ rot_clk = 25
 btn = 18
 
 # HX711
-clck = 15
-dt = 14
+hx1_clck = 15
+hx1_dt = 14
+
+hx2_clck = 7
+hx2_dt = 8
+
 
 stop_threads = False
 RotaryCounter = 0
@@ -75,12 +80,29 @@ def send_data_watersensor():
 def send_data_bottlesensor():
     idbottlesensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
     current_datetime = datetime.datetime.now()
-    bottledist = round(watersensor.distance(), 2)
+    bottledist = round(bottlesensor.distance(), 2)
     print(f"Bottle acknowledged - distance: {bottledist} at {current_datetime}")
     create_historiek = DataRepository.create_historiek(idbottlesensor, 1, current_datetime, bottledist, 'bottle sensor test')
     if create_historiek:
         print('New history entry created successfully.')
 
+# def send_data_proteinweight():
+#     idproteinweight = (DataRepository.get_id_sensor('Gewicht meten van de proteine'))['DeviceID']
+#     current_datetime = datetime.datetime.now()
+#     proteinweight = hx_protein.get_data_mean()
+#     print(f"Protein Weight: {proteinweight} at {current_datetime}")
+#     create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, proteinweight, 'protein weight test')
+#     if create_historiek:
+#         print('New history entry created successfully.')
+
+# def send_data_creatineweight():
+#     idproteinweight = (DataRepository.get_id_sensor('Gewicht meten van de creatine'))['DeviceID']
+#     current_datetime = datetime.datetime.now()
+#     creatineweight = hx_creatine.get_data_mean()
+#     print(f"Creatine Weight: {creatineweight} at {current_datetime}")
+#     create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, creatineweight, 'creatine weight test')
+#     if create_historiek:
+#         print('New history entry created successfully.')
 
 def all_out():
     GPIO.setmode(GPIO.BCM)  # Ensure correct pin numbering mode within the thread
@@ -90,6 +112,8 @@ def all_out():
         if (time.time() - time_all_out) >= 5:
             send_data_watersensor()
             send_data_bottlesensor()
+            send_data_proteinweight()
+            send_data_creatineweight()
             time_all_out = time.time()
 
 def start_thread():
@@ -117,14 +141,21 @@ if __name__ == '__main__':
 
         Proteinmotor = StepperMotor([6, 13, 19, 26])
         Creatinemotor = StepperMotor([5, 17, 27, 22])
-        # Proteinmotor.draaien_links()
+
+        hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
+        hx_protein.zero()
+        hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
+        hx_creatine.zero()
+
+        # proteinweight = hx_protein.get_data_mean()
+        # print(proteinweight)
+        # creatineweight = hx_creatine.get_data_mean()
+        # print(creatineweight)
 
         # thread = start_thread()
-        print('before socket')
         socketio.run(app, debug=False, host='0.0.0.0')
-        # print('after socket')
-        # while True:
-        #     pass
+        while True:
+            pass
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:
