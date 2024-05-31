@@ -53,8 +53,8 @@ btn = 18
 hx1_clck = 15
 hx1_dt = 14
 
-hx2_clck = 8
-hx2_dt = 7
+hx2_clck = 16
+hx2_dt = 1
 
 
 stop_threads = False
@@ -98,37 +98,53 @@ def send_data_bottlesensor():
         print('New history entry created successfully.')
 
 def send_data_proteinweight():
-    idproteinweight = (DataRepository.get_id_sensor('Gewicht meten van de proteine'))['DeviceID']
-    current_datetime = datetime.datetime.now()
-    proteinweight = hx_protein.get_data_mean()
-    print(f"Protein Weight: {proteinweight} at {current_datetime}")
-    create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, proteinweight, 'protein weight test')
-    if create_historiek:
-        print('New history entry created successfully.')
+    try:
+        idproteinweight = (DataRepository.get_id_sensor('Gewicht meten van de proteine'))['DeviceID']
+        current_datetime = datetime.datetime.now()
+        proteinweight = hx_protein.get_weight_mean()
+        print(f"Protein Weight: {proteinweight} at {current_datetime}")
+        create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, proteinweight, 'protein weight test')
+        if create_historiek:
+            print('New history entry created successfully.')
+    except:
+        print('protein weight error')
 
-# def send_data_creatineweight():
-#     idcreateineweight = (DataRepository.get_id_sensor('Gewicht meten van de creatine'))['DeviceID']
-#     current_datetime = datetime.datetime.now()
-#     creatineweight = hx_creatine.get_data_mean()
-#     print(f"Creatine Weight: {creatineweight} at {current_datetime}")
-#     create_historiek = DataRepository.create_historiek(idcreateineweight, 1, current_datetime, creatineweight, 'creatine weight test')
-#     if create_historiek:
-#         print('New history entry created successfully.')
+def send_data_creatineweight():
+    try:
+        idcreateineweight = (DataRepository.get_id_sensor('Gewicht meten van de creatine'))['DeviceID']
+        current_datetime = datetime.datetime.now()
+        creatineweight = hx_creatine.get_data_mean()
+        print(f"Creatine Weight: {creatineweight} at {current_datetime}")
+        create_historiek = DataRepository.create_historiek(idcreateineweight, 1, current_datetime, creatineweight, 'creatine weight test')
+        if create_historiek:
+            print('New history entry created successfully.')
+    except:
+        print('creatine weight error')
 
-def all_out():
+def read_sensors():
     GPIO.setmode(GPIO.BCM)  # Ensure correct pin numbering mode within the thread
     time_all_out = time.time()
-    print('test all_out')
+    print('**** Reading sensors ****')
     while not stop_threads:
-        if (time.time() - time_all_out) >= 100:
+        if (time.time() - time_all_out) >= 60:
             send_data_watersensor()
             send_data_bottlesensor()
             send_data_proteinweight()
-            # send_data_creatineweight()
+            send_data_creatineweight()
             time_all_out = time.time()
 
 def start_thread():
-    thread = threading.Thread(target=all_out)
+    hx_protein.zero()
+    hx_creatine.zero()
+    proteinmean = hx_protein.get_data_mean(readings=100)
+    creatinemean = hx_creatine.get_data_mean(readings=100)
+    value = 1
+    ratio_protein = proteinmean/value
+    ratio_creatine = creatinemean/value
+    hx_protein.set_scale_ratio(ratio_protein)
+    hx_creatine.set_scale_ratio(ratio_creatine)
+
+    thread = threading.Thread(target=read_sensors)
     thread.start()
     return thread
 
@@ -141,8 +157,6 @@ GPIO.add_event_callback(btn, my_callback_one)
 
 if __name__ == '__main__':
     try:
-        print("**** Starting HC-SR04 Distance Measurement ****")
-        # Instantiate HC_SR04 with the appropriate GPIO pins
         watersensor = HC_SR04(trig1, echo1)
         bottlesensor = HC_SR04(trig2, echo2)
 
@@ -154,14 +168,7 @@ if __name__ == '__main__':
         Creatinemotor = StepperMotor([5, 17, 27, 22])
 
         hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
-        hx_protein.zero()
-        # hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
-        # hx_creatine.zero()
-
-        # proteinweight = hx_protein.get_data_mean()
-        # print(proteinweight)
-        # creatineweight = hx_creatine.get_data_mean()
-        # print(creatineweight)
+        hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
 
         thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')

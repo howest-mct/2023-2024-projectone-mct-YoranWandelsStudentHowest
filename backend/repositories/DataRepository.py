@@ -24,7 +24,7 @@ class DataRepository:
     
     def read_historiek():
         sql = "SELECT * FROM historiek"
-        return Database.get_one_row(sql)
+        return Database.get_rows(sql)
     
     def create_gebruiker(gebruikersnaam, wachtwoord, email, voornaam, achternaam, geboortedatum, rol, accountstatus, aanmaakdatum, laatstingelogd):
         sql = "INSERT INTO gebruiker (GebruikerID, Gebruikersnaam, Wachtwoord, Email, Voornaam, Achternaam, Geboortedatum, Rol, AccountStatus, Aanmaakdatum, LaatstIngelogd) VALUES \
