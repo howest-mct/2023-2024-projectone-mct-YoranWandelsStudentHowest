@@ -14,7 +14,7 @@ class LCD:
         self.init_LCD()
 
     # stuur instructie
-    def send_instructGPIOn(self, value):
+    def send_instruction(self, value):
         # rs laag: voor instructGPIOn
         GPIO.output(self.rs, GPIO.LOW)
         # enable hoog
@@ -50,15 +50,15 @@ class LCD:
             self.send_character(ord(char))
 
     def clear_display(self):
-        self.send_instructGPIOn(0b00000001)
-        # self.send_instructGPIOn(0b00000010)
+        self.send_instruction(0b00000001)
+        # self.send_instruction(0b00000010)
 
     # init_LCD()
     def init_LCD(self):
         # set datalengte op 8 bit (= DB4 hoog), 2 lijnen (=DB3), 5x7 display (=DB2).
-        self.send_instructGPIOn(0b00111000)
+        self.send_instruction(0b00111000)
         # display on (=DB2), cursor on (=DB1), blinking on (=DB0)
-        self.send_instructGPIOn(0b00001111)
+        self.send_instruction(0b00001111)
         # clear display en cursor home (DB0 hoog)
         self.clear_display()
 
@@ -67,9 +67,9 @@ class LCD:
         # byte maken: row (0 of 1) = 0x0* voor rij 0 of 0x4* voor rij 1. col = 0x*0 - 0x*F
         byte = row << 6 | col
         # byte | 128 want DB7 moet 1 zijn
-        self.send_instructGPIOn(byte | 128)
+        self.send_instruction(byte | 128)
 
     # move screen: verplaatst het scherm
     def move_screen(self):
-        self.send_instructGPIOn(0b00011000)
+        self.send_instruction(0b00011000)
 

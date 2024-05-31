@@ -39,9 +39,9 @@ trig2 = 12
 echo2 = 11
 
 # Rotary encoder
-switch = 23
-dt = 24
-clk = 25
+rot_switch = 23
+rot_dt = 24
+rot_clk = 25
 
 # button
 btn = 18
@@ -63,19 +63,33 @@ def hallo():
 def initial_connection():
     print('A new client connect')
 
+def send_data_watersensor():
+    idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
+    current_datetime = datetime.datetime.now()
+    waterdist = round(watersensor.distance(), 2)
+    print(f"Water distance: {waterdist} at {current_datetime}")
+    create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
+    if create_historiek:
+        print('New history entry created successfully.')
+
+def send_data_bottlesensor():
+    idbottlesensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
+    current_datetime = datetime.datetime.now()
+    bottledist = round(watersensor.distance(), 2)
+    print(f"Bottle acknowledged - distance: {bottledist} at {current_datetime}")
+    create_historiek = DataRepository.create_historiek(idbottlesensor, 1, current_datetime, bottledist, 'bottle sensor test')
+    if create_historiek:
+        print('New history entry created successfully.')
+
+
 def all_out():
     GPIO.setmode(GPIO.BCM)  # Ensure correct pin numbering mode within the thread
     time_all_out = time.time()
     print('test all_out')
     while not stop_threads:
         if (time.time() - time_all_out) >= 5:
-            idwatersensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
-            current_datetime = datetime.datetime.now()
-            waterdist = round(watersensor.distance(), 2)
-            print(f"Water distance: {waterdist} at {current_datetime}")
-            create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
-            if create_historiek:
-                print('New history entry created successfully.')
+            send_data_watersensor()
+            send_data_bottlesensor()
             time_all_out = time.time()
 
 def start_thread():
@@ -97,20 +111,20 @@ if __name__ == '__main__':
         watersensor = HC_SR04(trig1, echo1)
         bottlesensor = HC_SR04(trig2, echo2)
 
-        rotary = rotaryEncoder(switch, dt, clk)
         pcf = PCF(sda, scl, adres)
         lcd = LCD(rs, enable, pcf)
+        rotary = rotaryEncoder(rot_switch, rot_dt, rot_clk, lcd)
 
         Proteinmotor = StepperMotor([6, 13, 19, 26])
         Creatinemotor = StepperMotor([5, 17, 27, 22])
         # Proteinmotor.draaien_links()
 
-        lcd.clear_display()
-        lcd.write_message('hey')
         # thread = start_thread()
+        print('before socket')
         socketio.run(app, debug=False, host='0.0.0.0')
-        while True:
-            print(rotaryEncoder.counter())
+        # print('after socket')
+        # while True:
+        #     pass
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:
