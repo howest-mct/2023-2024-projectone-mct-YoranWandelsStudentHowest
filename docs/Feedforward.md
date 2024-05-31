@@ -73,7 +73,9 @@ Lector: Frederik
 
 Vragen voor dit gesprek:
 
-- vraag 1: Reflectie schema database
+- vraag 1:
+
+    - Reflectie schema database
 
 Dit is de feedback op mijn vragen.
 
@@ -84,14 +86,25 @@ Dit is de feedback op mijn vragen.
     - geen extra tabel voor de shakes bij te houden want heb je al in historiek
 
 
-## Gesprek 3 (Datum: xx/xx/2024)
+## Gesprek 3 (Datum: 5/29/2024)
 
-Lector:
+Lector: Christophe
 
 Vragen voor dit gesprek:
 
-- vraag 1: V
+- vraag 1:
+
+    - Probleem met database connectie
+
+- vraag 2:
+    - Probleem met socketio connectie
 
 Dit is de feedback op mijn vragen.
 
-- feedback 1: G
+- feedback 1:
+
+    - lgpio opnieuw instaleren
+
+- feedback 2:
+
+    - ip adress gebruiken als url, socketio server starten in de backend
