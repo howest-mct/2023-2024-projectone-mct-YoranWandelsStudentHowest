@@ -74,6 +74,15 @@ def get_bestemmingen():
         else:
             return jsonify(message='error'), 404
 
+@app.route(endpoint + '/waterlevel/', methods=["GET"])
+def get_waterlevel():
+    if request.method == 'GET':
+        waterlevel = DataRepository.get_latest_waterlevel()
+        if waterlevel is not None:
+            return jsonify(waterlevel=waterlevel), 200
+        else:
+            return jsonify(message='error'), 404
+
 # SOCKET IO
 @socketio.on('connect')
 def initial_connection():
@@ -84,9 +93,10 @@ def send_data_watersensor():
     current_datetime = datetime.datetime.now()
     waterdist = round(watersensor.distance(), 2)
     print(f"Water distance: {waterdist} at {current_datetime}")
-    create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
-    if create_historiek:
-        print('New history entry created successfully.')
+    # create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
+    # if create_historiek:
+    #     print('New history entry created successfully.')
+    socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
 def send_data_bottlesensor():
     idbottlesensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
@@ -126,23 +136,26 @@ def read_sensors():
     time_all_out = time.time()
     print('**** Reading sensors ****')
     while not stop_threads:
-        if (time.time() - time_all_out) >= 60:
+        if (time.time() - time_all_out) >= 5:
             send_data_watersensor()
-            send_data_bottlesensor()
-            send_data_proteinweight()
-            send_data_creatineweight()
+            # send_data_bottlesensor()
+            # send_data_proteinweight()
+            # send_data_creatineweight()
             time_all_out = time.time()
 
 def start_thread():
-    hx_protein.zero()
-    hx_creatine.zero()
-    proteinmean = hx_protein.get_data_mean(readings=100)
-    creatinemean = hx_creatine.get_data_mean(readings=100)
-    value = 1
-    ratio_protein = proteinmean/value
-    ratio_creatine = creatinemean/value
-    hx_protein.set_scale_ratio(ratio_protein)
-    hx_creatine.set_scale_ratio(ratio_creatine)
+    try:
+        hx_protein.zero()
+        hx_creatine.zero()
+        proteinmean = hx_protein.get_data_mean(readings=100)
+        creatinemean = hx_creatine.get_data_mean(readings=100)
+        value = 1
+        ratio_protein = proteinmean/value
+        ratio_creatine = creatinemean/value
+        hx_protein.set_scale_ratio(ratio_protein)
+        hx_creatine.set_scale_ratio(ratio_creatine)
+    except Exception as ex:
+        print(ex)
 
     thread = threading.Thread(target=read_sensors)
     thread.start()
@@ -170,10 +183,13 @@ if __name__ == '__main__':
         hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
         hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
 
+
         thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')
-        while True:
-            pass
+        # while True:
+        #     waterdist = round(watersensor.distance(), 2)
+        #     print(f"Water distance: {waterdist}")
+        #     time.sleep(1)
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:

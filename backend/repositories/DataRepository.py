@@ -22,6 +22,13 @@ class DataRepository:
         params = [beschrijving]
         return Database.get_one_row(sql,params)
     
+    def get_latest_waterlevel():
+        sql = "SELECT Waarde FROM historiek \
+                WHERE DeviceID = 2 \
+                ORDER BY Actiedatum DESC \
+                LIMIT 1"
+        return Database.get_one_row(sql)
+    
     def read_historiek():
         sql = "SELECT * FROM historiek"
         return Database.get_rows(sql)

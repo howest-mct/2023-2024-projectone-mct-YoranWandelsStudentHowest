@@ -2,12 +2,23 @@
 
 const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
+let waterChart;
+const maxWater = 810;
 
 const listenToUI = function () { };
+
 
 const listenToSocket = function () {
   socketio.on('connect', function () {
     console.log('verbonden met socket webserver');
+  });
+  socketio.on('B2F_waterlevel', function (data) {
+    console.log('new waterlevel');
+    const remainingWater = data.waterlevel; // dynamically fetched
+
+    waterChart.data.datasets[0].data[0] = remainingWater;
+    waterChart.data.datasets[0].data[1] = maxWater - remainingWater;
+    waterChart.update();
   });
 };
 // #region ***  DOM references                           ***********
@@ -17,15 +28,12 @@ const listenToSocket = function () {
 const showHistoriek = function (jsonObject) {
   console.info(jsonObject);
 };
-
-const showGraphWater = function (jsonObject) {
-  const maxWater = 1000; // in ml
-  const remainingWater = 400; // in ml
-
+const showWaterlevel = function (jsonObject) {
+  water
   const data = {
-    labels: ['Remaining Water', 'Used Water'],
+    labels: ['Remaining Water'],
     datasets: [{
-      label: 'Water Level',
+      // label: 'Water Level',
       data: [remainingWater, maxWater - remainingWater],
       backgroundColor: ['#36a2eb', '#ff6384'],
       hoverOffset: 4
@@ -37,11 +45,12 @@ const showGraphWater = function (jsonObject) {
     data: data,
   };
 
-  const waterChart = new Chart(
-    document.getElementById('waterChart'),
-    config
-  );
+  const ctx = document.getElementById('waterChart').getContext('2d');
+  waterChart = new Chart(ctx, config);
 }
+const showGraphWater = function (jsonObject) {
+
+};
 // #endregion
 
 // #region ***  Callback-No Visualisation - callback___  ***********
@@ -50,6 +59,9 @@ const showGraphWater = function (jsonObject) {
 // #region ***  Data Access - get___                     ***********
 const getHistoriek = function () {
   handleData("http://192.168.168.169:5000/api/v1/historiek/", showHistoriek);
+};
+const getWaterlevel = function () {
+  handleData("http://192.168.168.169:5000/api/v1/waterlevel/", showWaterlevel);
 };
 // #endregion
 
@@ -63,6 +75,8 @@ const init = function () {
   listenToUI();
   listenToSocket();
   getHistoriek();
+  getWaterlevel();
+  showGraphWater();
 };
 
 document.addEventListener('DOMContentLoaded', init);
