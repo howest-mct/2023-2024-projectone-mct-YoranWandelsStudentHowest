@@ -12,9 +12,9 @@ const listenToSocket = function () {
   socketio.on('connect', function () {
     console.log('verbonden met socket webserver');
   });
-  socketio.on('B2F_waterlevel', function (data) {
+  socketio.on('B2F_waterlevel', function (object) {
     console.log('new waterlevel');
-    const remainingWater = data.waterlevel; // dynamically fetched
+    const remainingWater = object.waterlevel; // dynamically fetched
 
     waterChart.data.datasets[0].data[0] = remainingWater;
     waterChart.data.datasets[0].data[1] = maxWater - remainingWater;
@@ -29,7 +29,8 @@ const showHistoriek = function (jsonObject) {
   console.info(jsonObject);
 };
 const showWaterlevel = function (jsonObject) {
-  water
+  const   remainingWater = jsonObject['waterlevel'].Waarde;
+  // remainingWater = jsonObject
   const data = {
     labels: ['Remaining Water'],
     datasets: [{
@@ -47,9 +48,6 @@ const showWaterlevel = function (jsonObject) {
 
   const ctx = document.getElementById('waterChart').getContext('2d');
   waterChart = new Chart(ctx, config);
-}
-const showGraphWater = function (jsonObject) {
-
 };
 // #endregion
 
@@ -61,6 +59,7 @@ const getHistoriek = function () {
   handleData("http://192.168.168.169:5000/api/v1/historiek/", showHistoriek);
 };
 const getWaterlevel = function () {
+  console.log('get water');
   handleData("http://192.168.168.169:5000/api/v1/waterlevel/", showWaterlevel);
 };
 // #endregion
@@ -76,7 +75,6 @@ const init = function () {
   listenToSocket();
   getHistoriek();
   getWaterlevel();
-  showGraphWater();
 };
 
 document.addEventListener('DOMContentLoaded', init);

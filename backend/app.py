@@ -144,18 +144,18 @@ def read_sensors():
             time_all_out = time.time()
 
 def start_thread():
-    try:
-        hx_protein.zero()
-        hx_creatine.zero()
-        proteinmean = hx_protein.get_data_mean(readings=100)
-        creatinemean = hx_creatine.get_data_mean(readings=100)
-        value = 1
-        ratio_protein = proteinmean/value
-        ratio_creatine = creatinemean/value
-        hx_protein.set_scale_ratio(ratio_protein)
-        hx_creatine.set_scale_ratio(ratio_creatine)
-    except Exception as ex:
-        print(ex)
+    # try:
+    #     hx_protein.zero()
+    #     hx_creatine.zero()
+    #     proteinmean = hx_protein.get_data_mean(readings=100)
+    #     creatinemean = hx_creatine.get_data_mean(readings=100)
+    #     value = 1
+    #     ratio_protein = proteinmean/value
+    #     ratio_creatine = creatinemean/value
+    #     hx_protein.set_scale_ratio(ratio_protein)
+    #     hx_creatine.set_scale_ratio(ratio_creatine)
+    # except Exception as ex:
+    #     print(ex)
 
     thread = threading.Thread(target=read_sensors)
     thread.start()
@@ -184,16 +184,16 @@ if __name__ == '__main__':
         hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
 
 
-        thread = start_thread()
-        socketio.run(app, debug=False, host='0.0.0.0')
-        # while True:
-        #     waterdist = round(watersensor.distance(), 2)
-        #     print(f"Water distance: {waterdist}")
-        #     time.sleep(1)
+        # thread = start_thread()
+        # socketio.run(app, debug=False, host='0.0.0.0')
+        while True:
+            waterdist = round(watersensor.distance(), 2)
+            print(f"Water distance: {waterdist}")
+            time.sleep(1)
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:
         print("Stopping threads and cleaning up GPIO")
         stop_threads = True
-        thread.join()  # Ensure the thread has completed
+        # thread.join()  # Ensure the thread has completed
         GPIO.cleanup()
