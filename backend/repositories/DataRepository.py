@@ -29,6 +29,20 @@ class DataRepository:
                 LIMIT 1"
         return Database.get_one_row(sql)
     
+    def get_latest_proteinweight():
+        sql = "SELECT Waarde FROM historiek \
+                WHERE DeviceID = 3 \
+                ORDER BY Actiedatum DESC \
+                LIMIT 1"
+        return Database.get_one_row(sql)
+
+    def get_latest_creatineweight():
+        sql = "SELECT Waarde FROM historiek \
+                WHERE DeviceID = 4 \
+                ORDER BY Actiedatum DESC \
+                LIMIT 1"
+        return Database.get_one_row(sql)
+    
     def read_historiek():
         sql = "SELECT * FROM historiek"
         return Database.get_rows(sql)

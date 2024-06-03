@@ -56,6 +56,9 @@ hx1_dt = 14
 hx2_clck = 16
 hx2_dt = 1
 
+# waterpump
+waterpump = 0
+
 
 stop_threads = False
 RotaryCounter = 0
@@ -82,6 +85,24 @@ def get_waterlevel():
             return jsonify(waterlevel=waterlevel), 200
         else:
             return jsonify(message='error'), 404
+        
+@app.route(endpoint + '/proteinweight/', methods=["GET"])
+def get_waterlevel():
+    if request.method == 'GET':
+        waterlevel = DataRepository.get_latest_waterlevel()
+        if waterlevel is not None:
+            return jsonify(waterlevel=waterlevel), 200
+        else:
+            return jsonify(message='error'), 404
+        
+@app.route(endpoint + '/creatineweight/', methods=["GET"])
+def get_waterlevel():
+    if request.method == 'GET':
+        waterlevel = DataRepository.get_latest_waterlevel()
+        if waterlevel is not None:
+            return jsonify(waterlevel=waterlevel), 200
+        else:
+            return jsonify(message='error'), 404
 
 # SOCKET IO
 @socketio.on('connect')
@@ -93,19 +114,21 @@ def send_data_watersensor():
     current_datetime = datetime.datetime.now()
     waterdist = round(watersensor.distance(), 2)
     print(f"Water distance: {waterdist} at {current_datetime}")
-    # create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
-    # if create_historiek:
-    #     print('New history entry created successfully.')
-    socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
+    create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
+    if create_historiek:
+        print('New history entry created successfully.')
+        socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
 def send_data_bottlesensor():
     idbottlesensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
     current_datetime = datetime.datetime.now()
     bottledist = round(bottlesensor.distance(), 2)
+    bottlestatus = 1 if bottledist < 100 else 0
     print(f"Bottle acknowledged - distance: {bottledist} at {current_datetime}")
     create_historiek = DataRepository.create_historiek(idbottlesensor, 1, current_datetime, bottledist, 'bottle sensor test')
     if create_historiek:
         print('New history entry created successfully.')
+        socketio.emit('B2F_bottlestatus', {'status': bottlestatus})
 
 def send_data_proteinweight():
     try:
@@ -138,7 +161,7 @@ def read_sensors():
     while not stop_threads:
         if (time.time() - time_all_out) >= 5:
             send_data_watersensor()
-            # send_data_bottlesensor()
+            send_data_bottlesensor()
             # send_data_proteinweight()
             # send_data_creatineweight()
             time_all_out = time.time()
@@ -184,16 +207,16 @@ if __name__ == '__main__':
         hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
 
 
-        # thread = start_thread()
-        # socketio.run(app, debug=False, host='0.0.0.0')
-        while True:
-            waterdist = round(watersensor.distance(), 2)
-            print(f"Water distance: {waterdist}")
-            time.sleep(1)
+        thread = start_thread()
+        socketio.run(app, debug=False, host='0.0.0.0')
+        # while True:
+        #     bottledist = round(bottlesensor.distance(), 2)
+        #     print(f"Bottle distance: {bottledist}")
+        #     time.sleep(1)
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:
         print("Stopping threads and cleaning up GPIO")
         stop_threads = True
-        # thread.join()  # Ensure the thread has completed
+        thread.join()  # Ensure the thread has completed
         GPIO.cleanup()
