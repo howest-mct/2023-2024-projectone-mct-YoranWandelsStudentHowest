@@ -87,20 +87,20 @@ def get_waterlevel():
             return jsonify(message='error'), 404
         
 @app.route(endpoint + '/proteinweight/', methods=["GET"])
-def get_waterlevel():
+def get_proteinweight():
     if request.method == 'GET':
-        waterlevel = DataRepository.get_latest_waterlevel()
-        if waterlevel is not None:
-            return jsonify(waterlevel=waterlevel), 200
+        proteinweight = DataRepository.get_latest_proteinweight()
+        if proteinweight is not None:
+            return jsonify(proteinweight=proteinweight), 200
         else:
             return jsonify(message='error'), 404
         
 @app.route(endpoint + '/creatineweight/', methods=["GET"])
-def get_waterlevel():
+def get_creatineweight():
     if request.method == 'GET':
-        waterlevel = DataRepository.get_latest_waterlevel()
-        if waterlevel is not None:
-            return jsonify(waterlevel=waterlevel), 200
+        creatineweight = DataRepository.get_latest_creatineweight()
+        if creatineweight is not None:
+            return jsonify(creatineweight=creatineweight), 200
         else:
             return jsonify(message='error'), 404
 
@@ -139,6 +139,7 @@ def send_data_proteinweight():
         create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, proteinweight, 'protein weight test')
         if create_historiek:
             print('New history entry created successfully.')
+            socketio.emit('B2F_proteinweight', {'weight': proteinweight})
     except:
         print('protein weight error')
 
@@ -151,6 +152,7 @@ def send_data_creatineweight():
         create_historiek = DataRepository.create_historiek(idcreateineweight, 1, current_datetime, creatineweight, 'creatine weight test')
         if create_historiek:
             print('New history entry created successfully.')
+            socketio.emit('B2F_creatineweight', {'weight': creatineweight})
     except:
         print('creatine weight error')
 
@@ -162,24 +164,11 @@ def read_sensors():
         if (time.time() - time_all_out) >= 5:
             send_data_watersensor()
             send_data_bottlesensor()
-            # send_data_proteinweight()
-            # send_data_creatineweight()
+            send_data_proteinweight()
+            send_data_creatineweight()
             time_all_out = time.time()
 
 def start_thread():
-    # try:
-    #     hx_protein.zero()
-    #     hx_creatine.zero()
-    #     proteinmean = hx_protein.get_data_mean(readings=100)
-    #     creatinemean = hx_creatine.get_data_mean(readings=100)
-    #     value = 1
-    #     ratio_protein = proteinmean/value
-    #     ratio_creatine = creatinemean/value
-    #     hx_protein.set_scale_ratio(ratio_protein)
-    #     hx_creatine.set_scale_ratio(ratio_creatine)
-    # except Exception as ex:
-    #     print(ex)
-
     thread = threading.Thread(target=read_sensors)
     thread.start()
     return thread
@@ -193,30 +182,50 @@ GPIO.add_event_callback(btn, my_callback_one)
 
 if __name__ == '__main__':
     try:
-        watersensor = HC_SR04(trig1, echo1)
-        bottlesensor = HC_SR04(trig2, echo2)
+        # watersensor = HC_SR04(trig1, echo1)
+        # bottlesensor = HC_SR04(trig2, echo2)
 
-        pcf = PCF(sda, scl, adres)
-        lcd = LCD(rs, enable, pcf)
-        rotary = rotaryEncoder(rot_switch, rot_dt, rot_clk, lcd)
+        # pcf = PCF(sda, scl, adres)
+        # lcd = LCD(rs, enable, pcf)
+        # rotary = rotaryEncoder(rot_switch, rot_dt, rot_clk, lcd)
 
-        Proteinmotor = StepperMotor([6, 13, 19, 26])
-        Creatinemotor = StepperMotor([5, 17, 27, 22])
+        # Proteinmotor = StepperMotor([6, 13, 19, 26])
+        # Creatinemotor = StepperMotor([5, 17, 27, 22])
 
-        hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
-        hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
+        # hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
+        # hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
+
+        # try:
+        #     hx_protein.zero()
+        #     hx_creatine.zero()
+        #     proteinmean = hx_protein.get_data_mean(readings=100)
+        #     creatinemean = hx_creatine.get_data_mean(readings=100)
+        #     value = 1
+        #     ratio_protein = proteinmean/value
+        #     ratio_creatine = creatinemean/value
+        #     hx_protein.set_scale_ratio(ratio_protein)
+        #     hx_creatine.set_scale_ratio(ratio_creatine)
+        # except Exception as ex:
+        #     print(ex)
 
 
-        thread = start_thread()
+        # thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')
         # while True:
-        #     bottledist = round(bottlesensor.distance(), 2)
-        #     print(f"Bottle distance: {bottledist}")
-        #     time.sleep(1)
+        #     try:
+        #         current_datetime = datetime.datetime.now()
+        #         proteinweight = hx_protein.get_raw_data_mean()
+        #         print(f"Protein Weight: {proteinweight} at {current_datetime}")
+        #         current_datetime = datetime.datetime.now()
+        #         creatineweight = hx_creatine.get_raw_data_mean()
+        #         print(f"Creatine Weight: {creatineweight} at {current_datetime}")
+        #         # time.sleep(1)
+        #     except Exception as ex:
+        #         print(ex)
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:
         print("Stopping threads and cleaning up GPIO")
         stop_threads = True
-        thread.join()  # Ensure the thread has completed
+        # thread.join()  # Ensure the thread has completed
         GPIO.cleanup()
