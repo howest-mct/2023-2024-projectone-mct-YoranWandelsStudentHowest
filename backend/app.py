@@ -7,6 +7,7 @@ from helpers.LCD import LCD
 from helpers.RotaryEncoder import rotaryEncoder
 from helpers.StepperMotor import StepperMotor
 from helpers.HX711 import HX711
+from helpers.Waterpump import Waterpump
 import threading
 from repositories.DataRepository import DataRepository
 from flask import Flask, jsonify, request
@@ -57,7 +58,7 @@ hx2_clck = 16
 hx2_dt = 1
 
 # waterpump
-waterpump = 0
+wp_pin = 0
 
 
 stop_threads = False
@@ -195,19 +196,20 @@ if __name__ == '__main__':
         hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
         hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
 
-        try:
-            hx_protein.zero()
-            hx_creatine.zero()
-            proteinmean = hx_protein.get_data_mean(readings=100)
-            creatinemean = hx_creatine.get_data_mean(readings=100)
-            value = 1
-            ratio_protein = proteinmean/value
-            ratio_creatine = creatinemean/value
-            hx_protein.set_scale_ratio(ratio_protein)
-            hx_creatine.set_scale_ratio(ratio_creatine)
-        except Exception as ex:
-            print(ex)
-
+        waterpump = Waterpump(wp_pin)
+        # try:
+        #     hx_protein.zero()
+        #     hx_creatine.zero()
+        #     proteinmean = hx_protein.get_data_mean(readings=100)
+        #     creatinemean = hx_creatine.get_data_mean(readings=100)
+        #     value = 1
+        #     ratio_protein = proteinmean/value
+        #     ratio_creatine = creatinemean/value
+        #     hx_protein.set_scale_ratio(ratio_protein)
+        #     hx_creatine.set_scale_ratio(ratio_creatine)
+        # except Exception as ex:
+        #     print(ex)
+        
 
         thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')

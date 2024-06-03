@@ -92,15 +92,12 @@ const getHistoriek = function () {
   handleData("http://192.168.168.169:5000/api/v1/historiek/", showHistoriek);
 };
 const getWaterlevel = function () {
-  console.log('get water');
   handleData("http://192.168.168.169:5000/api/v1/waterlevel/", showWaterlevel);
 };
 const getProteinweight = function () {
-  console.log('get protein');
   handleData("http://192.168.168.169:5000/api/v1/proteinweight/", showProteinweight);
 };
 const getCreatineweight = function () {
-  console.log('get creatine');
   handleData("http://192.168.168.169:5000/api/v1/creatineweight/", showCreatineweight);
 };
 // #endregion
