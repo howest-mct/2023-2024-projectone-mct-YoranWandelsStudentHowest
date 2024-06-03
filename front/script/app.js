@@ -136,11 +136,17 @@ const listenToSocket = function () {
     console.log('new proteinstatus');
     const proteinweight = object.weight;
     console.info(proteinweight);
+    proteinChart.data.datasets[0].data[0] = proteinweight;
+    proteinChart.data.datasets[0].data[1] = maxProtein - proteinweight;
+    proteinChart.update();
   });
   socketio.on('B2F_creatineweight', function (object) {
     console.log('new creatinestatus');
     const creatineweight = object.weight;
     console.info(creatineweight);
+    creatineChart.data.datasets[0].data[0] = creatineweight;
+    creatineChart.data.datasets[0].data[1] = maxCreatine - creatineweight;
+    creatineChart.update();
   });
 };
 // #endregion

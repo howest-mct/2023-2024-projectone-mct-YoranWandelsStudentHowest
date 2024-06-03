@@ -182,34 +182,34 @@ GPIO.add_event_callback(btn, my_callback_one)
 
 if __name__ == '__main__':
     try:
-        # watersensor = HC_SR04(trig1, echo1)
-        # bottlesensor = HC_SR04(trig2, echo2)
+        watersensor = HC_SR04(trig1, echo1)
+        bottlesensor = HC_SR04(trig2, echo2)
 
-        # pcf = PCF(sda, scl, adres)
-        # lcd = LCD(rs, enable, pcf)
-        # rotary = rotaryEncoder(rot_switch, rot_dt, rot_clk, lcd)
+        pcf = PCF(sda, scl, adres)
+        lcd = LCD(rs, enable, pcf)
+        rotary = rotaryEncoder(rot_switch, rot_dt, rot_clk, lcd)
 
-        # Proteinmotor = StepperMotor([6, 13, 19, 26])
-        # Creatinemotor = StepperMotor([5, 17, 27, 22])
+        Proteinmotor = StepperMotor([6, 13, 19, 26])
+        Creatinemotor = StepperMotor([5, 17, 27, 22])
 
-        # hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
-        # hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
+        hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
+        hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
 
-        # try:
-        #     hx_protein.zero()
-        #     hx_creatine.zero()
-        #     proteinmean = hx_protein.get_data_mean(readings=100)
-        #     creatinemean = hx_creatine.get_data_mean(readings=100)
-        #     value = 1
-        #     ratio_protein = proteinmean/value
-        #     ratio_creatine = creatinemean/value
-        #     hx_protein.set_scale_ratio(ratio_protein)
-        #     hx_creatine.set_scale_ratio(ratio_creatine)
-        # except Exception as ex:
-        #     print(ex)
+        try:
+            hx_protein.zero()
+            hx_creatine.zero()
+            proteinmean = hx_protein.get_data_mean(readings=100)
+            creatinemean = hx_creatine.get_data_mean(readings=100)
+            value = 1
+            ratio_protein = proteinmean/value
+            ratio_creatine = creatinemean/value
+            hx_protein.set_scale_ratio(ratio_protein)
+            hx_creatine.set_scale_ratio(ratio_creatine)
+        except Exception as ex:
+            print(ex)
 
 
-        # thread = start_thread()
+        thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')
         # while True:
         #     try:
@@ -227,5 +227,5 @@ if __name__ == '__main__':
     finally:
         print("Stopping threads and cleaning up GPIO")
         stop_threads = True
-        # thread.join()  # Ensure the thread has completed
+        thread.join()  # Ensure the thread has completed
         GPIO.cleanup()
