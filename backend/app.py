@@ -115,10 +115,10 @@ def send_data_watersensor():
     current_datetime = datetime.datetime.now()
     waterdist = round(watersensor.distance(), 2)
     print(f"Water distance: {waterdist} at {current_datetime}")
-    create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
-    if create_historiek:
-        print('New history entry created successfully.')
-        socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
+    # create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
+    # if create_historiek:
+    #     print('New history entry created successfully.')
+    socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
 def send_data_bottlesensor():
     idbottlesensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
@@ -126,10 +126,10 @@ def send_data_bottlesensor():
     bottledist = round(bottlesensor.distance(), 2)
     bottlestatus = 1 if bottledist < 100 else 0
     print(f"Bottle acknowledged - distance: {bottledist} at {current_datetime}")
-    create_historiek = DataRepository.create_historiek(idbottlesensor, 1, current_datetime, bottledist, 'bottle sensor test')
-    if create_historiek:
-        print('New history entry created successfully.')
-        socketio.emit('B2F_bottlestatus', {'status': bottlestatus})
+    # create_historiek = DataRepository.create_historiek(idbottlesensor, 1, current_datetime, bottledist, 'bottle sensor test')
+    # if create_historiek:
+    #     print('New history entry created successfully.')
+    socketio.emit('B2F_bottlestatus', {'status': bottlestatus})
 
 def send_data_proteinweight():
     try:
@@ -137,10 +137,10 @@ def send_data_proteinweight():
         current_datetime = datetime.datetime.now()
         proteinweight = hx_protein.get_weight_mean()
         print(f"Protein Weight: {proteinweight} at {current_datetime}")
-        create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, proteinweight, 'protein weight test')
-        if create_historiek:
-            print('New history entry created successfully.')
-            socketio.emit('B2F_proteinweight', {'weight': proteinweight})
+        # create_historiek = DataRepository.create_historiek(idproteinweight, 1, current_datetime, proteinweight, 'protein weight test')
+        # if create_historiek:
+        #     print('New history entry created successfully.')
+        socketio.emit('B2F_proteinweight', {'weight': proteinweight})
     except:
         print('protein weight error')
 
@@ -150,10 +150,10 @@ def send_data_creatineweight():
         current_datetime = datetime.datetime.now()
         creatineweight = hx_creatine.get_data_mean()
         print(f"Creatine Weight: {creatineweight} at {current_datetime}")
-        create_historiek = DataRepository.create_historiek(idcreateineweight, 1, current_datetime, creatineweight, 'creatine weight test')
-        if create_historiek:
-            print('New history entry created successfully.')
-            socketio.emit('B2F_creatineweight', {'weight': creatineweight})
+        # create_historiek = DataRepository.create_historiek(idcreateineweight, 1, current_datetime, creatineweight, 'creatine weight test')
+        # if create_historiek:
+        #     print('New history entry created successfully.')
+        socketio.emit('B2F_creatineweight', {'weight': creatineweight})
     except:
         print('creatine weight error')
 
