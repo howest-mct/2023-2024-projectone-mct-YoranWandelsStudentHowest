@@ -3,19 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Protein Shake Dispenser</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="style/screen.css" />
+    <link href="https://fonts.googleapis.com/css?family=Oswald:400,700" rel="stylesheet" />
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+    <script src="script/app.js"></script>
+    <script src="script/datahandler.js"></script>
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="make-shake.html">Make a Shake</a>
-            <a href="logout.html">Logout</a>
-        </nav>
-      </header>
     <div class="login-container">
-        <h1>Protein Shake Dispenser</h1>
         <form id="login-form">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
@@ -23,9 +19,8 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
             
-            <button type="submit">Login</button>
+            <button class="js-login" type="submit">Login</button>
         </form>
-        <a href="#">Forgot Password?</a>
     </div>
 </body>
 </html>

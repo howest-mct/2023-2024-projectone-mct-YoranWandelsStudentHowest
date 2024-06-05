@@ -94,7 +94,7 @@ class rotaryEncoder:
             self.lcd.write_message(f'{self.measurements}')
         elif self.clickc3 == True:
             self.lcd.send_instruction(0b11000000) #new line
-            self.wateramout = self.measurements
+            self.wateramount = self.measurements
             self.lcd.write_message(f'{self.measurements}')
         elif self.clickc1 == False & self.clickc2 == False & self.clickc3 == False:
             if self.counter == 0:

@@ -105,6 +105,14 @@ def get_creatineweight():
         else:
             return jsonify(message='error'), 404
 
+@app.route(endpoint + '/gebruiker/', methods=["POST"])
+def create_gebruiker():
+    if request.method == 'POST':
+        gegevens = DataRepository.json_or_formdata(request)
+        current_datetime = datetime.datetime.now()
+        new_gebruiker = DataRepository.create_gebruiker(gegevens['Gebruikersnaam'], hash(gegevens['Wachtwoord']), gegevens['Email'], current_datetime)
+        return jsonify(gebruikerid=new_gebruiker), 201
+
 # SOCKET IO
 @socketio.on('connect')
 def initial_connection():
@@ -163,6 +171,7 @@ def read_sensors():
     print('**** Reading sensors ****')
     while not stop_threads:
         if (time.time() - time_all_out) >= 5:
+            print('sending data')
             send_data_watersensor()
             send_data_bottlesensor()
             send_data_proteinweight()
@@ -198,11 +207,12 @@ if __name__ == '__main__':
 
         waterpump = Waterpump(wp_pin)
         # try:
+        #     print('zeroing')
         #     hx_protein.zero()
         #     hx_creatine.zero()
         #     proteinmean = hx_protein.get_data_mean(readings=100)
         #     creatinemean = hx_creatine.get_data_mean(readings=100)
-        #     value = 1
+        #     value = 100
         #     ratio_protein = proteinmean/value
         #     ratio_creatine = creatinemean/value
         #     hx_protein.set_scale_ratio(ratio_protein)
@@ -216,12 +226,12 @@ if __name__ == '__main__':
         # while True:
         #     try:
         #         current_datetime = datetime.datetime.now()
-        #         proteinweight = hx_protein.get_raw_data_mean()
+        #         proteinweight = hx_protein.get_weight_mean()
         #         print(f"Protein Weight: {proteinweight} at {current_datetime}")
         #         current_datetime = datetime.datetime.now()
-        #         creatineweight = hx_creatine.get_raw_data_mean()
+        #         creatineweight = hx_creatine.get_weight_mean()
         #         print(f"Creatine Weight: {creatineweight} at {current_datetime}")
-        #         # time.sleep(1)
+        #         time.sleep(1)
         #     except Exception as ex:
         #         print(ex)
     except KeyboardInterrupt:
@@ -229,5 +239,5 @@ if __name__ == '__main__':
     finally:
         print("Stopping threads and cleaning up GPIO")
         stop_threads = True
-        thread.join()  # Ensure the thread has completed
+        # thread.join()  # Ensure the thread has completed
         GPIO.cleanup()

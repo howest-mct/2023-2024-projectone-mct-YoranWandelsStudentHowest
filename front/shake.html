@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make a Shake - Protein Shake Dispenser</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Make a Shaker</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="style/screen.css" /><link rel="stylesheet" type="text/css" media="screen" href="style/screen.css" />
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+        integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+        crossorigin="anonymous"></script>
+    <script src="script/app.js"></script>
+    <script src="script/datahandler.js"></script>
 </head>
+
 <body>
-    <header>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="make-shake.html">Make a Shake</a>
-            <a href="logout.html">Logout</a>
-        </nav>
-      </header>
     <main>
-        <h2>Make Your Shake</h2>
         <form id="shake-form">
-            <label for="protein-amount">Protein (g)</label>
-            <input type="number" id="protein-amount" name="protein-amount" min="0" required>
-            
-            <label for="creatine-amount">Creatine (g)</label>
-            <input type="number" id="creatine-amount" name="creatine-amount" min="0" required>
-            
+            <input type="radio" id="protein" name="fav_language" value="Protein" checked>
+            <label for="protein">Protein</label><br>
+            <input type="radio" id="creatine" name="fav_language" value="Creatine">
+            <label for="creatine">Creatine</label><br>
+
+            <label for="amount">Creatine (g)</label>
+            <input type="number" id="amount" name="amount" min="0" required>
+
             <label for="water-amount">Water (ml)</label>
             <input type="number" id="water-amount" name="water-amount" min="0" required>
-            
+
             <button type="submit">Create Shake</button>
         </form>
     </main>
 </body>
+
 </html>

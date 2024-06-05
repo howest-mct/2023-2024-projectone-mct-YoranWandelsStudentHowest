@@ -4,7 +4,7 @@ const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
 
 // #region ***  DOM references                           ***********
-let  statusElement, waterChart, proteinChart, creatineChart;
+let statusElement, waterChart, proteinChart, creatineChart, registerContainer, register, login;
 const maxWater = 810;
 const maxProtein = 100;
 const maxCreatine = 100;
@@ -38,7 +38,7 @@ const showWaterlevel = function (jsonObject) {
 const showProteinweight = function (jsonObject) {
   console.log('get proteine weight');
   const remainingProtein = jsonObject['proteinweight'].Waarde;
-  console.info(remainingProtein)
+  console.info(remainingProtein);
   // remainingWater = jsonObject
   const data = {
     labels: ['Remaining Protein'],
@@ -62,7 +62,7 @@ const showProteinweight = function (jsonObject) {
 const showCreatineweight = function (jsonObject) {
   console.log('get creatine weight');
   const remainingCreatine = jsonObject['creatineweight'].Waarde;
-  console.info(remainingCreatine)
+  console.info(remainingCreatine);
   // remainingWater = jsonObject
   const data = {
     labels: ['Remaining Creatine'],
@@ -85,6 +85,12 @@ const showCreatineweight = function (jsonObject) {
 // #endregion
 
 // #region ***  Callback-No Visualisation - callback___  ***********
+const callbackAddGebruiker = function () {
+  console.log('nieuwe gebruiker toegevoegt');
+};
+const callbackLogin = function () {
+  console.log('login')
+}
 // #endregion
 
 // #region ***  Data Access - get___                     ***********
@@ -105,45 +111,87 @@ const getCreatineweight = function () {
 // #region ***  Event Listeners - listenTo___            ***********
 const listenToUI = function () { };
 
-
 const listenToSocket = function () {
   socketio.on('connect', function () {
     console.log('verbonden met socket webserver');
   });
-  socketio.on('B2F_waterlevel', function (object) {
-    console.log('new waterlevel');
-    const remainingWater = object.waterlevel; // dynamically fetched
+  if (register) {
+    socketio.on('B2F_waterlevel', function (object) {
+      console.log('new waterlevel');
+      const remainingWater = object.waterlevel; // dynamically fetched
 
-    waterChart.data.datasets[0].data[0] = remainingWater;
-    waterChart.data.datasets[0].data[1] = maxWater - remainingWater;
-    waterChart.update();
-  });
-  socketio.on('B2F_bottlestatus', function (object) {
-    console.log('new bottlestatus');
-    const bottlestatus = object.status;
-    if (bottlestatus) {
-      statusElement.innerHTML = "Status: Bottle Present";
-      statusElement.style.color = "green";
+      waterChart.data.datasets[0].data[0] = remainingWater;
+      waterChart.data.datasets[0].data[1] = maxWater - remainingWater;
+      waterChart.update();
+    });
+    socketio.on('B2F_bottlestatus', function (object) {
+      console.log('new bottlestatus');
+      const bottlestatus = object.status;
+      if (bottlestatus) {
+        statusElement.innerHTML = "Status: Bottle Present";
+        statusElement.style.color = "green";
+      } else {
+        statusElement.innerHTML = "Status: No Bottle";
+        statusElement.style.color = "red";
+      }
+    });
+    socketio.on('B2F_proteinweight', function (object) {
+      console.log('new proteinstatus');
+      const proteinweight = object.weight;
+      console.info(proteinweight);
+      proteinChart.data.datasets[0].data[0] = proteinweight;
+      proteinChart.data.datasets[0].data[1] = maxProtein - proteinweight;
+      proteinChart.update();
+    });
+    socketio.on('B2F_creatineweight', function (object) {
+      console.log('new creatinestatus');
+      const creatineweight = object.weight;
+      console.info(creatineweight);
+      creatineChart.data.datasets[0].data[0] = creatineweight;
+      creatineChart.data.datasets[0].data[1] = maxCreatine - creatineweight;
+      creatineChart.update();
+    });
+  }
+};
+
+const listenToClickRegister = function () {
+  const button = document.querySelector('.js-register');
+  button.addEventListener('click', function () {
+    console.log('nieuwe gebruiker');
+    const username = document.querySelector('#gebruikersnaam').value;
+    const email = document.querySelector('#email').value;
+    const password = document.querySelector('#password').value;
+    const passwordConfirm = document.querySelector("#confirm-password").value;
+    console.log(username, email, password, passwordConfirm);
+    if (username && email && password && passwordConfirm) {
+      console.log(username, email, password, passwordConfirm);
+      if (password == passwordConfirm) {
+        const jsonobject = {
+          Gebruikersnaam: username,
+          Wachtwoord: password,
+          Email: email
+        };
+        handleData("http://192.168.168.169:5000/api/v1/gebruiker/", callbackAddGebruiker, null, 'POST', JSON.stringify(jsonobject));
+      } else {
+        console.log('Passwords not equal');
+      }
     } else {
-      statusElement.innerHTML = "Status: No Bottle";
-      statusElement.style.color = "red";
+      console.log('All fields are required.');
     }
   });
-  socketio.on('B2F_proteinweight', function (object) {
-    console.log('new proteinstatus');
-    const proteinweight = object.weight;
-    console.info(proteinweight);
-    proteinChart.data.datasets[0].data[0] = proteinweight;
-    proteinChart.data.datasets[0].data[1] = maxProtein - proteinweight;
-    proteinChart.update();
-  });
-  socketio.on('B2F_creatineweight', function (object) {
-    console.log('new creatinestatus');
-    const creatineweight = object.weight;
-    console.info(creatineweight);
-    creatineChart.data.datasets[0].data[0] = creatineweight;
-    creatineChart.data.datasets[0].data[1] = maxCreatine - creatineweight;
-    creatineChart.update();
+};
+
+const listenToClickLogin = function () {
+  const button = document.querySelector('.js-login');
+  button.addEventListener('click', function () {
+    const email = document.querySelector('#email').value;
+    const password = document.querySelector('#password').value;
+    console.log(email, password);
+    const jsonobject = {
+      Email: email,
+      Wachtwoord: password
+    };
+    handleData("http://192.168.168.169:5000/api/v1/inloggen/", callbackLogin, null, 'POST', JSON.stringify(jsonobject));
   });
 };
 // #endregion
@@ -152,13 +200,24 @@ const listenToSocket = function () {
 
 const init = function () {
   console.info('DOM geladen');
-  statusElement = document.getElementById('status');
+  statusElement = document.querySelector('#status');
+  registerContainer = document.querySelector('.register-container');
+  register = document.querySelector('.js-register');
+  login = document.querySelector('.js-login');
   listenToUI();
   listenToSocket();
-  getHistoriek();
-  getWaterlevel();
-  getProteinweight();
-  getCreatineweight();
+  if (register) {
+    getHistoriek();
+    getWaterlevel();
+    getProteinweight();
+    getCreatineweight();
+  }
+  if (registerContainer) {
+    listenToClickRegister();
+  }
+  if (login) {
+    listenToClickLogin();
+  }
 };
 
 document.addEventListener('DOMContentLoaded', init);
