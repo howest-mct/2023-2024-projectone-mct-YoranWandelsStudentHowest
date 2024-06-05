@@ -112,6 +112,13 @@ def create_gebruiker():
         current_datetime = datetime.datetime.now()
         new_gebruiker = DataRepository.create_gebruiker(gegevens['Gebruikersnaam'], hash(gegevens['Wachtwoord']), gegevens['Email'], current_datetime)
         return jsonify(gebruikerid=new_gebruiker), 201
+    
+@app.route(endpoint + '/inloggen/', methods=["POST"])
+def login_gebruiker():
+    if request.method == 'POST':
+        gegevens = DataRepository.json_or_formdata(request)
+        new_gebruiker = DataRepository
+        return jsonify(gebruikerid=new_gebruiker), 201
 
 # SOCKET IO
 @socketio.on('connect')
