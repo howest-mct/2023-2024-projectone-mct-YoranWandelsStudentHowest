@@ -56,18 +56,18 @@ html {
   font-family: "Inter Web", Helvetica, arial, sans-serif;
   color: #495057;
   scroll-behavior: smooth;
-  background-color: #f8f9fa;
+  background-color: #edf2f5;
 }
 
 /*
     Customize the background color and color to match your design.
 */
 ::-moz-selection {
-  background: #5c7cfa;
+  background: #339af0;
   color: white;
 }
 ::selection {
-  background: #5c7cfa;
+  background: #339af0;
   color: white;
 }
 
@@ -148,20 +148,25 @@ hr {
 }
 
 a {
-  color: #4c6ef5;
+  color: #228be6;
   transition: all 0.1s ease-in-out;
 }
 
-a:visited {
-  color: #4c6ef5;
-}
-
 a:hover {
-  color: #5c7cfa;
+  color: #339af0;
 }
 
 a:active {
-  color: #4263eb;
+  color: #1c7ed6;
+}
+
+input {
+  padding: 10px; /* Voeg wat padding toe voor een beter zichtbare grootte */
+  border-radius: 8px; /* Voeg een border-radius toe om de hoeken af te ronden */
+  border: 1px solid #ccc; /* Voeg een rand toe voor visuele scheiding */
+  width: 100%; /* Zorg ervoor dat het invoerveld de volledige breedte inneemt */
+  box-sizing: border-box; /* Zorg ervoor dat de padding en de rand de breedte niet vergroten */
+  margin-bottom: 10px; /* Voeg wat ruimte toe onder het invoerveld */
 }
 
 /*---------------------------------------/*
@@ -213,7 +218,7 @@ a:active {
 }
 
 .o-row--primary {
-  background: #4263eb;
+  background: #1c7ed6;
 }
 
 .o-row--grey-dark {
@@ -224,12 +229,16 @@ a:active {
 .o-row--xs {
   padding-top: 0.8571428571rem;
   padding-bottom: 0.8571428571rem;
+  background-color: white;
 }
 
-@media (min-width: 48.0625em) {
-  .o-row--l {
-    padding: 3.4285714286rem 1.7142857143rem 1.7142857143rem;
-  }
+.o-row--xl {
+  padding: 4.5714285714rem;
+}
+
+.o-row--l {
+  padding: 3.4285714286rem 1.7142857143rem 1.7142857143rem;
+  background-color: #edf2f5;
 }
 
 .o-row--header {
@@ -410,22 +419,27 @@ a:active {
   display: block;
   height: 100%;
   width: auto;
-  fill: #edf2ff;
+  fill: #e7f5ff;
 }
 .c-logo__symbol:hover {
-  fill: #dbe4ff;
+  fill: #d0ebff;
 }
 
 /*
   Components: Header
   ---
-  The header component is used to display the header of the site
+  The header component is used to display the header of the sitec-header__logo
 */
 .c-header {
   display: flex;
   align-items: center;
   gap: 1.7142857143rem;
   justify-content: space-between;
+}
+@media (max-width: 36.0625em) {
+  .c-header {
+    justify-content: center;
+  }
 }
 
 .c-header__user {
@@ -447,9 +461,204 @@ a:active {
   }
 }
 
+.c-header__logo {
+  display: flex;
+  gap: 1.1428571429rem;
+  align-items: center;
+  padding: 0.8571428571rem;
+  background-color: #228be6;
+  border-radius: 2.2857142857rem;
+}
+@media (max-width: 48.0625em) {
+  .c-header__logo {
+    display: none;
+  }
+}
+
+.c-header__name {
+  margin: 0;
+  color: white;
+  font-weight: 700;
+}
+
+/*
+  Components: account
+*/
+.c-acc__list {
+  display: flex;
+  gap: 2.2857142857rem;
+  margin: 0;
+}
+
+.c-acc__item {
+  border: 2px solid #228be6;
+  border-radius: 2.2857142857rem;
+  padding: 0.8571428571rem 1.7142857143rem;
+  font-weight: 700;
+  color: #228be6;
+  background-color: transparent;
+}
+@media (max-width: 36.0625em) {
+  .c-acc__item {
+    display: none;
+  }
+}
+
+.c-acc__item--active {
+  color: white;
+  background-color: #228be6;
+}
+
+.c-acc__link {
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.c-acc__link:hover {
+  color: #1c7ed6;
+}
+
+.c-acc__link--active {
+  color: white;
+}
+
+.c-acc__link--active:hover {
+  color: #d0ebff;
+}
+
+/*
+  Components: amount
+*/
+.c-amount {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8571428571rem;
+}
+
+/*
+  Components: form
+*/
+.c-form {
+  background-color: white;
+  border-radius: 0.8571428571rem;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1); /* Schaduw met zachtere randen */
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.c-form__status {
+  text-align: center;
+}
+
+.c-form__list {
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+  Components: svg
+*/
+.c-svg__bottle {
+  stroke: red;
+}
+
+/*
+  Components: chart
+*/
+.c-main-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Ensures alignment of charts at the top */
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+}
+
+.c-main-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Ensures alignment of charts at the top */
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+}
+
+.c-chart-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Spacing between charts */
+}
+
+.c-chart {
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.c-chart__form {
+  background-color: white;
+  border-radius: 10px; /* Example size, adjust as needed */
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1); /* Schaduw met zachtere randen */
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 10px; /* Optional: adds spacing around the form */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 48.0625em) {
+  .c-main-container {
+    flex-direction: column;
+    align-items: center; /* Center the charts horizontally */
+  }
+  .c-chart-container {
+    flex-direction: column;
+  }
+  .c-chart__form {
+    width: auto; /* Ensure this matches the width of the charts plus some padding */
+  }
+}
+/*
+  Components: shake
+*/
+.c-shake__radio {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.1428571429rem;
+}
+
+.c-shake__powder {
+  display: flex;
+}
+
+/*
+  Components: btn
+*/
+.c-btn {
+  display: flex;
+  gap: 1.1428571429rem;
+  align-items: center;
+  padding: 0.8571428571rem 3.4285714286rem;
+  background-color: #228be6;
+  border-radius: 0.8571428571rem;
+  color: white;
+  border: 2px solid;
+  justify-content: center;
+}
+
+/*
+  Components: bottle
+*/
+.c-bottle {
+  background-color: white;
+}
+
 /*
   Components: Main
 */
+/*
+  Components: powder
+*/
+.c-powder {
+  display: flex;
+}
+
 .c-main {
   position: relative;
 }
@@ -459,12 +668,6 @@ a:active {
   ---
   The nav component is used to display the navigation of the site
 */
-@media (max-width: 36.0625em) {
-  .c-nav--header {
-    display: none;
-  }
-}
-
 .c-nav__title {
   font-size: 1rem;
   color: currentColor;
@@ -490,7 +693,7 @@ a:active {
 .c-nav--logo .c-nav__list {
   display: flex;
   gap: 0.8571428571rem;
-  background-color: #4c6ef5;
+  background-color: #228be6;
   color: white;
   border-radius: 4rem;
   align-items: center;
@@ -499,28 +702,18 @@ a:active {
 
 .c-nav__link:-moz-any-link {
   display: block;
-  font-weight: 600;
-  color: #dbe4ff;
+  font-weight: 500;
+  color: black;
   text-decoration: none;
   border-radius: 6px;
 }
 
 .c-nav__link:any-link {
   display: block;
-  font-weight: 600;
-  color: #dbe4ff;
+  font-weight: 500;
+  color: black;
   text-decoration: none;
   border-radius: 6px;
-}
-.c-nav__item--active .c-nav__link:-moz-any-link {
-  color: #edf2ff;
-  background-color: #364fc7;
-  padding: 0.5714285714rem 1.1428571429rem;
-}
-.c-nav__item--active .c-nav__link:any-link {
-  color: #edf2ff;
-  background-color: #364fc7;
-  padding: 0.5714285714rem 1.1428571429rem;
 }
 .c-nav--mobile .c-nav__link:-moz-any-link {
   padding: 0.5714285714rem 1.1428571429rem;
@@ -530,7 +723,7 @@ a:active {
 }
 
 .c-nav__link:hover {
-  color: #edf2ff;
+  color: #1864ab;
 }
 
 /*
@@ -566,9 +759,9 @@ a:active {
   border-radius: 6px;
   font-weight: 600;
   text-decoration: none;
-  color: #edf2ff;
-  background-color: #4263eb;
-  border: 1px solid #4263eb;
+  color: #e7f5ff;
+  background-color: #1c7ed6;
+  border: 1px solid #1c7ed6;
   -moz-transition: background-color 0.2s ease-in-out;
   transition: background-color 0.2s ease-in-out;
 }
@@ -579,17 +772,17 @@ a:active {
   border-radius: 6px;
   font-weight: 600;
   text-decoration: none;
-  color: #edf2ff;
-  background-color: #4263eb;
-  border: 1px solid #4263eb;
+  color: #e7f5ff;
+  background-color: #1c7ed6;
+  border: 1px solid #1c7ed6;
   transition: background-color 0.2s ease-in-out;
 }
 .c-button:-moz-any-link:hover {
-  background-color: #4c6ef5;
+  background-color: #228be6;
 }
 .c-button:hover,
 .c-button:any-link:hover {
-  background-color: #4c6ef5;
+  background-color: #228be6;
 }
 
 .c-button--meta:-moz-any-link {
@@ -737,8 +930,8 @@ a:active {
 }
 
 .c-timeline__icon--advanced {
-  background-color: #dbe4ff;
-  color: #4263eb;
+  background-color: #d0ebff;
+  color: #1c7ed6;
 }
 
 .c-timeline__icon--complete {
@@ -780,7 +973,7 @@ a:active {
 
 .c-mobile-nav__body {
   position: relative;
-  background-color: #4263eb;
+  background-color: #1c7ed6;
   color: white;
   padding: 1.7142857143rem;
   height: 100%;

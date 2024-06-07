@@ -39,11 +39,11 @@ $color-text: $oc-gray-9;
 $color-text-light: $oc-gray-7;
 $color-text-lighter: $oc-gray-6;
 
-$color-primary: $oc-indigo-6;
-$color-primary-light: $oc-indigo-5;
-$color-primary-lighter: $oc-indigo-4;
-$color-primary-lightest: $oc-indigo-1;
-$color-primary-dark: $oc-indigo-7;
+$color-primary: $oc-blue-6;
+$color-primary-light: $oc-blue-5;
+$color-primary-lighter: $oc-blue-4;
+$color-primary-lightest: $oc-blue-1;
+$color-primary-dark: $oc-blue-7;
 
 $color-border: $oc-gray-3;
 $color-border-light: $oc-gray-2;
@@ -180,7 +180,7 @@ html {
   font-family: $font-family-primary; // global font-family
   color: $color-text-light; // global text color
   scroll-behavior: smooth; // smooth scrolling
-  background-color: $oc-gray-0;
+  background-color: #edf2f5;
 }
 
 /*
@@ -273,9 +273,9 @@ a {
   transition: all 0.1s ease-in-out;
 }
 
-a:visited {
-  color: $color-primary;
-}
+// a:visited {
+//   color: $color-primary;
+// }
 
 a:hover {
   color: $color-primary-light;
@@ -283,6 +283,15 @@ a:hover {
 
 a:active {
   color: $color-primary-dark;
+}
+
+input {
+  padding: 10px; /* Voeg wat padding toe voor een beter zichtbare grootte */
+  border-radius: 8px; /* Voeg een border-radius toe om de hoeken af te ronden */
+  border: 1px solid #ccc; /* Voeg een rand toe voor visuele scheiding */
+  width: 100%; /* Zorg ervoor dat het invoerveld de volledige breedte inneemt */
+  box-sizing: border-box; /* Zorg ervoor dat de padding en de rand de breedte niet vergroten */
+  margin-bottom: 10px; /* Voeg wat ruimte toe onder het invoerveld */
 }
 
 /*---------------------------------------/*
@@ -353,12 +362,15 @@ a:active {
 .o-row--xs {
   padding-top: $space-xs;
   padding-bottom: $space-xs;
+  background-color: white;
+}
+.o-row--xl {
+  padding: $space-xxl;
 }
 
 .o-row--l {
-  @include mq(bp2) {
-    padding: $space-xl $space-m $space-m;
-  }
+  padding: $space-xl $space-m $space-m;
+  background-color: #edf2f5;
 }
 
 .o-row--header {
@@ -551,17 +563,17 @@ a:active {
   display: block;
   height: 100%;
   width: auto;
-  fill: $oc-indigo-0;
+  fill: $oc-blue-0;
 
   &:hover {
-    fill: $oc-indigo-1;
+    fill: $oc-blue-1;
   }
 }
 
 /*
   Components: Header
   ---
-  The header component is used to display the header of the site
+  The header component is used to display the header of the sitec-header__logo
 */
 
 .c-header {
@@ -569,6 +581,9 @@ a:active {
   align-items: center;
   gap: $space-m;
   justify-content: space-between;
+  @include mq(bp1, max) {
+    justify-content: center;
+  }
 }
 
 .c-header__user {
@@ -588,9 +603,201 @@ a:active {
   }
 }
 
+.c-header__logo {
+  display: flex;
+  gap: $space-s;
+  align-items: center;
+  padding: $space-xs;
+  background-color: $color-primary;
+  border-radius: $space-l;
+  @include mq(bp2, max) {
+    display: none;
+  }
+}
+
+.c-header__name {
+  margin: 0;
+  color: white;
+  font-weight: 700;
+}
+
+/*
+  Components: account
+*/
+
+.c-acc__list {
+  display: flex;
+  gap: $space-l;
+  margin: 0;
+}
+.c-acc__item {
+  border: 2px solid $color-primary;
+  border-radius: $space-l;
+  padding: $space-xs $space-m;
+  @include mq(bp1, max) {
+    display: none;
+  }
+  font-weight: 700;
+  color: $color-primary;
+  background-color: transparent;
+}
+
+.c-acc__item--active {
+  color: white;
+  background-color: $color-primary;
+}
+
+.c-acc__link {
+  text-decoration: none;
+  font-weight: 700;
+}
+.c-acc__link:hover {
+  color: $color-primary-dark;
+}
+.c-acc__link--active {
+  color: white;
+}
+.c-acc__link--active:hover {
+  color: $color-primary-lightest;
+}
+
+/*
+  Components: amount
+*/
+.c-amount {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+/*
+  Components: form
+*/
+
+.c-form {
+  background-color: white;
+  border-radius: $space-xs;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1); /* Schaduw met zachtere randen */
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.c-form__status {
+  text-align: center;
+}
+
+.c-form__list {
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+  Components: svg
+*/
+.c-svg__bottle {
+  stroke: red;
+}
+
+/*
+  Components: chart
+*/
+
+.c-main-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Ensures alignment of charts at the top */
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+}
+.c-main-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Ensures alignment of charts at the top */
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+}
+
+.c-chart-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Spacing between charts */
+}
+
+.c-chart {
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.c-chart__form {
+  background-color: white;
+  border-radius: 10px; /* Example size, adjust as needed */
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1); /* Schaduw met zachtere randen */
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 10px; /* Optional: adds spacing around the form */
+}
+
+/* Media query for smaller screens */
+@include mq(bp2, max) {
+  .c-main-container {
+    flex-direction: column;
+    align-items: center; /* Center the charts horizontally */
+  }
+
+  .c-chart-container {
+    flex-direction: column;
+  }
+
+  .c-chart__form {
+    width: auto; /* Ensure this matches the width of the charts plus some padding */
+  }
+}
+/*
+  Components: shake
+*/
+
+.c-shake__radio {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: $space-s;
+}
+
+.c-shake__powder {
+  display: flex;
+}
+
+/*
+  Components: btn
+*/
+
+.c-btn {
+  display: flex;
+  gap: $space-s;
+  align-items: center;
+  padding: $space-xs $space-xl;
+  background-color: $color-primary;
+  border-radius: $space-xs;
+  color: white;
+  border: 2px solid;
+  justify-content: center;
+}
+
+/*
+  Components: bottle
+*/
+.c-bottle {
+  background-color: white;
+}
+
 /*
   Components: Main
 */
+
+/*
+  Components: powder
+*/
+.c-powder {
+  display: flex;
+}
 
 .c-main {
   position: relative;
@@ -602,11 +809,11 @@ a:active {
   The nav component is used to display the navigation of the site
 */
 
-.c-nav--header {
-  @include mq(bp1, max) {
-    display: none;
-  }
-}
+// .c-nav--header {
+//   @include mq(bp1, max) {
+//     display: none;
+//   }
+// }
 
 .c-nav__title {
   font-size: 1rem;
@@ -644,17 +851,10 @@ a:active {
 
 .c-nav__link:any-link {
   display: block;
-  font-weight: 600;
-  color: $oc-indigo-1;
+  font-weight: 500;
+  color: black;
   text-decoration: none;
   border-radius: $radius-m;
-
-  .c-nav__item--active & {
-    color: $oc-indigo-0;
-    background-color: $oc-indigo-9;
-    // padding: $space-xxs $space-xs;
-    padding: $space-xxs $space-s;
-  }
 
   .c-nav--mobile & {
     padding: $space-xxs $space-s;
@@ -662,7 +862,7 @@ a:active {
 }
 
 .c-nav__link:hover {
-  color: $oc-indigo-0;
+  color: $oc-blue-9;
 }
 
 /*
@@ -701,7 +901,7 @@ a:active {
   border-radius: $radius-m;
   font-weight: 600;
   text-decoration: none;
-  color: $oc-indigo-0;
+  color: $oc-blue-0;
   background-color: $color-primary-dark;
   border: 1px solid $color-primary-dark;
   transition: background-color 0.2s ease-in-out;
@@ -940,7 +1140,6 @@ a:active {
     translate: 0 0;
   }
 }
-
 
 /*---------------------------------------/*
  # UTILITIES

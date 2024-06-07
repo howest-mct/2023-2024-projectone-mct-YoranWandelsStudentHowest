@@ -89,8 +89,8 @@ const callbackAddGebruiker = function () {
   console.log('nieuwe gebruiker toegevoegt');
 };
 const callbackLogin = function () {
-  console.log('login')
-}
+  console.log('login');
+};
 // #endregion
 
 // #region ***  Data Access - get___                     ***********
@@ -197,6 +197,111 @@ const listenToClickLogin = function () {
 // #endregion
 
 // #region ***  Init / DOMContentLoaded                  ***********
+const showWaterlevelTest = function () {
+  const remainingWater = 400;
+  // remainingWater = jsonObject
+  const data = {
+    labels: ['Remaining Water'],
+    datasets: [{
+      // label: 'Water Level',
+      data: [remainingWater, maxWater - remainingWater],
+      backgroundColor: ['#36a2eb', '#d3d3d3'],
+      hoverOffset: 4
+    }]
+  };
+
+  const config = {
+    type: 'doughnut',
+    data: data,
+  };
+
+  const ctx = document.getElementById('waterChart').getContext('2d');
+  waterChart = new Chart(ctx, config);
+};
+
+const showProteinweightTest = function () {
+  console.log('get proteine weight');
+  const remainingProtein = 500;
+  console.info(remainingProtein);
+  // remainingWater = jsonObject
+  const data = {
+    labels: ['Remaining Protein'],
+    datasets: [{
+      // label: 'Proteine weight',
+      data: [remainingProtein, maxProtein - remainingProtein],
+      backgroundColor: ['#cddc39', '#d3d3d3'],
+      hoverOffset: 4
+    }]
+  };
+
+  const config = {
+    type: 'doughnut',
+    data: data,
+  };
+
+  const ctx = document.getElementById('proteinChart').getContext('2d');
+  proteinChart = new Chart(ctx, config);
+};
+
+const showCreatineweightTest = function () {
+  console.log('get creatine weight');
+  const remainingCreatine = 500;
+  console.info(remainingCreatine);
+  // remainingWater = jsonObject
+  const data = {
+    labels: ['Remaining Creatine'],
+    datasets: [{
+      // label: 'Proteine weight',
+      data: [remainingCreatine, maxCreatine - remainingCreatine],
+      backgroundColor: ['#ffa500', '#d3d3d3'],
+      hoverOffset: 4
+    }]
+  };
+
+
+  const config = {
+    type: 'doughnut',
+    data: data,
+  };
+
+  const ctx = document.getElementById('creatineChart').getContext('2d');
+  creatineChart = new Chart(ctx, config);
+};
+
+const showShakeGraphTest = function () {
+  // Data for the shake chart
+  const shakeData = {
+    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+    datasets: [{
+      label: 'Shake Data',
+      data: [65, 59, 80, 81, 56, 55, 40],
+      borderColor: 'rgba(75, 192, 192, 1)',
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderWidth: 1
+    }]
+  };
+
+  // Configuration options for the shake chart
+  const shakeConfig = {
+    type: 'line',
+    data: shakeData,
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          beginAtZero: true
+        },
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  };
+
+  // Create the shake chart
+  const shakeChartCtx = document.getElementById('shakeChart').getContext('2d');
+  new Chart(shakeChartCtx, shakeConfig);
+};
 
 const init = function () {
   console.info('DOM geladen');
@@ -206,11 +311,17 @@ const init = function () {
   login = document.querySelector('.js-login');
   listenToUI();
   listenToSocket();
+
+  showWaterlevelTest();
+  showProteinweightTest();
+  showCreatineweightTest();
+  showShakeGraphTest();
+
+  getHistoriek();
+  getWaterlevel();
+  getProteinweight();
+  getCreatineweight();
   if (register) {
-    getHistoriek();
-    getWaterlevel();
-    getProteinweight();
-    getCreatineweight();
   }
   if (registerContainer) {
     listenToClickRegister();

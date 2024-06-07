@@ -6,7 +6,7 @@ from helpers.PCF import PCF
 from helpers.LCD import LCD
 from helpers.RotaryEncoder import rotaryEncoder
 from helpers.StepperMotor import StepperMotor
-from helpers.HX711 import HX711
+from helpers.hx711 import HX711
 from helpers.Waterpump import Waterpump
 import threading
 from repositories.DataRepository import DataRepository
@@ -86,7 +86,7 @@ def get_waterlevel():
             return jsonify(waterlevel=waterlevel), 200
         else:
             return jsonify(message='error'), 404
-        
+
 @app.route(endpoint + '/proteinweight/', methods=["GET"])
 def get_proteinweight():
     if request.method == 'GET':
@@ -95,7 +95,7 @@ def get_proteinweight():
             return jsonify(proteinweight=proteinweight), 200
         else:
             return jsonify(message='error'), 404
-        
+
 @app.route(endpoint + '/creatineweight/', methods=["GET"])
 def get_creatineweight():
     if request.method == 'GET':
@@ -112,7 +112,7 @@ def create_gebruiker():
         current_datetime = datetime.datetime.now()
         new_gebruiker = DataRepository.create_gebruiker(gegevens['Gebruikersnaam'], hash(gegevens['Wachtwoord']), gegevens['Email'], current_datetime)
         return jsonify(gebruikerid=new_gebruiker), 201
-    
+
 @app.route(endpoint + '/inloggen/', methods=["POST"])
 def login_gebruiker():
     if request.method == 'POST':
@@ -226,7 +226,6 @@ if __name__ == '__main__':
         #     hx_creatine.set_scale_ratio(ratio_creatine)
         # except Exception as ex:
         #     print(ex)
-        
 
         thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')
