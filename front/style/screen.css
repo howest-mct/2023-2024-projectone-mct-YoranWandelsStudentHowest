@@ -1,222 +1,1279 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;900&display=swap");
+/*---------------------------------------/*
+ # Imports
+/*---------------------------------------*/
+/*---------------------------------------/*
+ # TOOLS
+/*---------------------------------------*/
 /*---------------------------------------/*
  # SETTINGS
 /*---------------------------------------*/
-@keyframes move-left {
-  0% {
-    transform: none;
-  }
-  65% {
-    transform: translateX(-80px);
-  }
-  100% {
-    transform: translateX(-80px);
-  }
-}
-@keyframes move-right {
-  0% {
-    transform: none;
-  }
-  65% {
-    transform: translateX(80px);
-  }
-  100% {
-    transform: translateX(80px);
-  }
-}
-@keyframes move-up {
-  100% {
-    bottom: 100.75px;
-  }
-}
-@keyframes move-down {
-  100% {
-    top: 100.75px;
-  }
-}
-@keyframes width-to-zero {
-  0% {
-    width: 50px;
-  }
-  100% {
-    width: 11px;
-  }
-}
 /*---------------------------------------/*
  # GENERIC
 /*---------------------------------------*/
+@font-face {
+  font-family: "Inter Web";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("../fonts/Inter-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter Web";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("../fonts/Inter-SemiBold.woff2") format("woff2");
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  font-weight: normal;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
 /*---------------------------------------/*
  # ELEMENTS
 /*---------------------------------------*/
-body,
+/*
+    Elements: Page
+    ---
+    Default markup for page level elements
+*/
 html {
-  height: 100%;
-  width: 100%;
+  font-size: 87.5%;
+  line-height: 1.7142857143;
+  font-family: "Inter Web", Helvetica, arial, sans-serif;
+  color: #495057;
+  scroll-behavior: smooth;
+  background-color: #f8f9fa;
 }
 
-body {
-  background: #aecad8;
-  transition: all 0.14s ease-in;
+/*
+    Customize the background color and color to match your design.
+*/
+::-moz-selection {
+  background: #5c7cfa;
+  color: white;
+}
+::selection {
+  background: #5c7cfa;
+  color: white;
+}
+
+/*
+    Elements: typography
+    ---
+    Default markup for typographic elements
+*/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong {
+  color: #212529;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 1.5714285714rem;
+  line-height: 2.2857142857rem;
+  margin-bottom: 1.7142857143rem;
+}
+
+h2 {
+  font-size: 1.2857142857rem;
+  line-height: 1.7142857143rem;
+  margin-bottom: 1.7142857143rem;
+}
+
+h3 {
+  font-size: 1rem;
+  line-height: 1.7142857143rem;
+  margin-bottom: 1.7142857143rem;
+}
+
+h4,
+h5,
+h6 {
+  font-size: 1rem;
+  line-height: 1.7142857143rem;
+  margin-bottom: 1.7142857143rem;
+}
+
+p,
+ol,
+ul,
+dl,
+table,
+address,
+figure {
+  margin-bottom: 1.7142857143rem;
+}
+
+ul,
+ol {
+  margin-left: 1.7142857143rem;
+}
+
+li ul,
+li ol {
+  margin-bottom: 0;
+}
+
+blockquote {
+  font-style: italic;
+  font-size: 1.4285714286rem;
+  line-height: 2.2857142857rem;
+  margin-bottom: 1.7142857143rem;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: #dee2e6;
+  margin-bottom: 1.7142857143rem;
+}
+
+a {
+  color: #4c6ef5;
+  transition: all 0.1s ease-in-out;
+}
+
+a:visited {
+  color: #4c6ef5;
+}
+
+a:hover {
+  color: #5c7cfa;
+}
+
+a:active {
+  color: #4263eb;
 }
 
 /*---------------------------------------/*
  # OBJECTS
 /*---------------------------------------*/
+/*
+    Objects: list reset
+    ---
+    Resets the default list styles
+*/
+.o-list-reset {
+  list-style: none;
+  margin-left: 0;
+}
+
+/*
+    Object: Button reset
+    ---
+    Small button reset object
+*/
+.o-button-reset {
+  display: inline-block;
+  border: none;
+  margin: 0;
+  padding: 0;
+  width: auto;
+  overflow: visible;
+  background: transparent;
+  /* inherit font & color from ancestor */
+  color: inherit;
+  font: inherit;
+  /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+  line-height: inherit;
+  /* Corrects font smoothing for webkit */
+  -webkit-font-smoothing: inherit;
+  -moz-osx-font-smoothing: inherit;
+  /* Corrects inability to style clickable `input` types in iOS */
+  -webkit-appearance: none;
+}
+
+/*
+    Objects: Row
+    ---
+    Creates a horizontal row with padding
+*/
+.o-row {
+  padding: 1.7142857143rem 1.7142857143rem 0;
+  display: flow-root;
+}
+
+.o-row--primary {
+  background: #4263eb;
+}
+
+.o-row--grey-dark {
+  background-color: get-color(color-gray, 800);
+  color: white;
+}
+
+.o-row--xs {
+  padding-top: 0.8571428571rem;
+  padding-bottom: 0.8571428571rem;
+}
+
+@media (min-width: 48.0625em) {
+  .o-row--l {
+    padding: 3.4285714286rem 1.7142857143rem 1.7142857143rem;
+  }
+}
+
+.o-row--header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+}
+
+/*
+    Objects: Container
+    ---
+    Creates a horizontal container that sets de global max-width
+*/
 .o-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 87.4285714286rem;
+}
+
+/*
+    Objects: Section
+    ---
+    Sections that follow each other get a margin-top
+*/
+.o-section + .o-section {
+  margin-top: 1.7142857143rem;
+}
+
+/*
+    Objects: Layout
+    ---
+    The layout object provides us with a column-style layout system. This object
+    contains the basic structural elements, but classes should be complemented
+    with width utilities
+*/
+.o-layout {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.o-layout__item {
+  flex-basis: 100%;
+}
+
+/* gutter modifiers, these affect o-layout__item too */
+.o-layout--gutter {
+  margin-left: -0.8571428571rem;
+  margin-right: -0.8571428571rem;
+}
+
+.o-layout--gutter > .o-layout__item {
+  padding-left: 0.8571428571rem;
+  padding-right: 0.8571428571rem;
+}
+
+.o-layout--gutter-s {
+  margin-left: -0.5714285714rem;
+  margin-right: -0.5714285714rem;
+}
+
+.o-layout--gutter-s > .o-layout__item {
+  padding-left: 0.5714285714rem;
+  padding-right: 0.5714285714rem;
+}
+
+.o-layout--gutter-l {
+  margin-left: -1.1428571429rem;
+  margin-right: -1.1428571429rem;
+}
+
+.o-layout--gutter-l > .o-layout__item {
+  padding-left: 1.1428571429rem;
+  padding-right: 1.1428571429rem;
+}
+
+/* reverse horizontal row modifier */
+.o-layout--row-reverse {
+  flex-direction: row-reverse;
+}
+
+/* Horizontal alignment modifiers*/
+.o-layout--justify-start {
+  justify-content: flex-start;
+}
+
+.o-layout--justify-end {
+  justify-content: flex-end;
+}
+
+.o-layout--justify-center {
+  justify-content: center;
+}
+
+.o-layout--justify-space-around {
+  justify-content: space-around;
+}
+
+.o-layout--justify-space-evenly {
+  justify-content: space-evenly;
+}
+
+.o-layout--justify-space-between {
+  justify-content: space-between;
+}
+
+/* Vertical alignment modifiers */
+.o-layout--align-start {
+  align-items: flex-start;
+}
+
+.o-layout--align-end {
+  align-items: flex-end;
+}
+
+.o-layout--align-center {
+  align-items: center;
+}
+
+.o-layout--align-baseline {
+  align-items: baseline;
+}
+
+/* Vertical alignment modifiers that only work if there is one than one flex item */
+.o-layout--align-content-start {
+  align-content: start;
+}
+
+.o-layout--align-content-end {
+  align-content: end;
+}
+
+.o-layout--align-content-center {
+  align-content: center;
+}
+
+.o-layout--align-content-space-around {
+  align-content: space-around;
+}
+
+.o-layout--align-content-space-between {
+  align-content: space-between;
+}
+
+/*------------------------------------*\
+  #COMPONENTS
+\*------------------------------------*/
+/*
+  Components: icon buttons
+  ---
+  The icon button component is used to display a button with an icon
+*/
+.c-icon-button {
+  display: flex;
+  align-items: center;
+}
+.c-icon-button svg {
+  fill: currentColor;
+}
+
+/*
+  Components: Logo
+  ---
+  The logo component is used to display the logo of the site
+*/
+.c-logo {
+  margin-bottom: 0;
+}
+
+.c-logo__link {
+  display: block;
+  height: 2.2857142857rem;
+}
+
+.c-logo__symbol {
+  display: block;
+  height: 100%;
+  width: auto;
+  fill: #edf2ff;
+}
+.c-logo__symbol:hover {
+  fill: #dbe4ff;
+}
+
+/*
+  Components: Header
+  ---
+  The header component is used to display the header of the site
+*/
+.c-header {
+  display: flex;
+  align-items: center;
+  gap: 1.7142857143rem;
+  justify-content: space-between;
+}
+
+.c-header__user {
+  height: 2.2857142857rem;
+  border-radius: 100%;
+}
+@media (min-width: 36.0625em) {
+  .c-header__user {
+    margin-left: auto;
+  }
+}
+
+.c-header__menu-button {
+  color: white;
+}
+@media (min-width: 36.0625em) {
+  .c-header__menu-button {
+    display: none;
+  }
+}
+
+/*
+  Components: Main
+*/
+.c-main {
+  position: relative;
+}
+
+/*
+  Components: Nav
+  ---
+  The nav component is used to display the navigation of the site
+*/
+@media (max-width: 36.0625em) {
+  .c-nav--header {
+    display: none;
+  }
+}
+
+.c-nav__title {
+  font-size: 1rem;
+  color: currentColor;
+  margin-bottom: 0;
+}
+
+.c-nav__header {
+  display: flex;
+  align-items: center;
+  gap: 1.7142857143rem;
+  justify-content: space-between;
+  margin-bottom: 1.7142857143rem;
+}
+
+.c-nav__list {
+  margin-bottom: 0;
+}
+.c-nav--header .c-nav__list {
+  display: flex;
+  gap: 2.2857142857rem;
+  align-items: center;
+}
+.c-nav--logo .c-nav__list {
+  display: flex;
+  gap: 0.8571428571rem;
+  background-color: #4c6ef5;
+  color: white;
+  border-radius: 4rem;
+  align-items: center;
+  padding: 1rem;
+}
+
+.c-nav__link:-moz-any-link {
+  display: block;
+  font-weight: 600;
+  color: #dbe4ff;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.c-nav__link:any-link {
+  display: block;
+  font-weight: 600;
+  color: #dbe4ff;
+  text-decoration: none;
+  border-radius: 6px;
+}
+.c-nav__item--active .c-nav__link:-moz-any-link {
+  color: #edf2ff;
+  background-color: #364fc7;
+  padding: 0.5714285714rem 1.1428571429rem;
+}
+.c-nav__item--active .c-nav__link:any-link {
+  color: #edf2ff;
+  background-color: #364fc7;
+  padding: 0.5714285714rem 1.1428571429rem;
+}
+.c-nav--mobile .c-nav__link:-moz-any-link {
+  padding: 0.5714285714rem 1.1428571429rem;
+}
+.c-nav--mobile .c-nav__link:any-link {
+  padding: 0.5714285714rem 1.1428571429rem;
+}
+
+.c-nav__link:hover {
+  color: #edf2ff;
+}
+
+/*
+    Components: Author
+    ---
+    The author component is used to display the author of an application
+*/
+.c-author {
+  display: flex;
+  align-items: center;
+  gap: 1.1428571429rem;
+  margin-bottom: 1.7142857143rem;
+}
+
+.c-author__image {
+  width: 4.5714285714rem;
+  aspect-ratio: 1/1;
+  border-radius: 100%;
+}
+
+.c-author__meta {
+  color: #868e96;
+}
+
+/*
+    Components: Buttons
+    ---
+    The button component is used to display buttons
+*/
+.c-button:-moz-any-link {
+  display: inline-block;
+  padding: 0.5714285714rem 1.1428571429rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #edf2ff;
+  background-color: #4263eb;
+  border: 1px solid #4263eb;
+  -moz-transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
+}
+.c-button,
+.c-button:any-link {
+  display: inline-block;
+  padding: 0.5714285714rem 1.1428571429rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #edf2ff;
+  background-color: #4263eb;
+  border: 1px solid #4263eb;
+  transition: background-color 0.2s ease-in-out;
+}
+.c-button:-moz-any-link:hover {
+  background-color: #4c6ef5;
+}
+.c-button:hover,
+.c-button:any-link:hover {
+  background-color: #4c6ef5;
+}
+
+.c-button--meta:-moz-any-link {
+  color: #495057;
+  background-color: white;
+  border-color: #ced4da;
+}
+
+.c-button--meta,
+.c-button--meta:any-link {
+  color: #495057;
+  background-color: white;
+  border-color: #ced4da;
+}
+.c-button--meta:-moz-any-link:hover {
+  background-color: #f8f9fa;
+}
+.c-button--meta:hover,
+.c-button--meta:any-link:hover {
+  background-color: #f8f9fa;
+}
+
+/*
+    Components: Links
+    ---
+    Special reusable link classes
+*/
+.c-link-bold {
+  font-weight: 600;
+  text-decoration: none;
+}
+.c-link-bold:hover {
+  text-decoration: underline;
+}
+
+/*
+    Components: Button group
+    ---
+    The button group component is used to display a group of buttons
+*/
+.c-button-group {
+  display: flex;
+  gap: 1.1428571429rem;
+}
+
+/*
+    Components: Card
+    ---
+    The card component is used to display a card
+*/
+.c-card {
+  border-radius: 8px;
+  background-color: white;
+  margin-bottom: 1.7142857143rem;
+}
+
+.c-card__body {
+  padding: 1.7142857143rem 1.7142857143rem 0;
+  display: flow-root;
+}
+.c-card__body + .c-card__body {
+  border-top: 1px solid #e9ecef;
+}
+
+/*
+    Components: Attachments
+    ---
+    The attachments component is used to display a list of attachments
+*/
+.c-attachments {
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+}
+
+.c-attachments__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8571428571rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8571428571rem 1.1428571429rem;
+}
+.c-attachments__item + .c-attachments__item {
+  border-top: 1px solid #e9ecef;
+}
+
+.c-attachments__icon {
+  fill: #adb5bd;
+  rotate: 45deg;
+  flex-shrink: 0;
+}
+
+.c-attachments__file {
+  display: flex;
+  align-items: center;
+  gap: 0.5714285714rem;
+}
+
+.c-attachments__file-name {
+  overflow-wrap: anywhere;
+}
+
+/*
+    Components: Timeline
+    ---
+    The timeline component is used to display a list of timeline items
+*/
+.c-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.7142857143rem;
+  position: relative;
+}
+.c-timeline::before {
+  content: "";
+  background-color: #e9ecef;
+  width: 2px;
+  position: absolute;
+  top: 2px;
+  bottom: calc(1.7142857143rem + 2px);
+  left: calc(1.7142857143rem - 1px);
+}
+
+.c-timeline__item {
+  display: flex;
+  gap: 0.8571428571rem;
+  align-items: flex-start;
+  position: relative;
+}
+
+.c-timeline__icon {
+  width: 3.4285714286rem;
+  aspect-ratio: 1/1;
+  border-radius: 100%;
+  background-color: #f1f3f5;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  width: 100vw;
+  color: #495057;
+  border: 2px solid white;
+}
+.c-timeline__icon svg {
+  fill: currentColor;
 }
 
-/*---------------------------------------/*
- # COMPONENTS
-/*---------------------------------------*/
-.c-power-btn {
-  margin: auto;
-  /* margin-top: 20px; */
-  background: #38434a;
-  border-radius: 0.3125rem;
-  color: white;
-  cursor: pointer;
-  font-family: Roboto;
-  font-weight: 800;
-  font-size: 1.9em;
-  height: 4rem;
-  letter-spacing: 0.2px;
-  line-height: 4rem;
-  text-align: center;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
-  width: 10rem;
-  transition: none;
-}
-.c-power-btn:hover {
-  background: #414e56;
-}
-.c-power-btn:active {
-  box-shadow: inset 0px 4px 10px 0px #2d363b;
-  transition: background 0.14s ease-in;
+.c-timeline__icon--advanced {
+  background-color: #dbe4ff;
+  color: #4263eb;
 }
 
-/* opmaak van de bulb */
-.c-fancy-bulb {
-  position: relative;
+.c-timeline__icon--complete {
+  background-color: #d3f9d8;
+  color: #2f9e44;
 }
-.c-fancy-bulb__streaks {
+
+.c-timeline__action {
+  margin-bottom: 0;
+}
+
+/*
+  Components: mobile nav
+  ---
+  The mobile nav component is used to display the mobile navigation
+*/
+.c-mobile-nav {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+  padding-right: 1.7142857143rem;
+}
+
+.c-mobile-nav__overlay {
   position: absolute;
-  background: #ffdb55;
-  border-radius: 5.5px;
-  height: 11px;
-  z-index: 5000;
-}
-.c-fancy-bulb__streaks:after, .c-fancy-bulb__streaks:before {
-  position: absolute;
-  background: #ffdb55;
-  border-radius: 5.5px;
-  height: 11px;
-  z-index: 5000;
-  content: "";
-  display: block;
-}
-.c-fancy-bulb__streaks:before {
-  bottom: 4rem;
-}
-.c-fancy-bulb__streaks:after {
-  top: 4rem;
-}
-.c-fancy-bulb__streaks--left {
-  right: 13.5rem;
-  top: 5.5rem;
-}
-.c-fancy-bulb__streaks--left:before, .c-fancy-bulb__streaks--left:after {
-  left: 1rem;
-}
-.c-fancy-bulb__streaks--right {
-  left: 13.5rem;
-  top: 5.5rem;
-}
-.c-fancy-bulb__streaks--right:before, .c-fancy-bulb__streaks--right:after {
-  right: 1rem;
-}
-.c-fancy-bulb__streaks--left:before, .c-fancy-bulb__streaks--righ:after {
-  transform: rotate(34deg);
-}
-.c-fancy-bulb__streaks--left:after, .c-fancy-bulb__streaks--righ:before {
-  transform: rotate(-34deg);
-}
-.c-fancy-bulb__light {
-  transform: translate(50%, 50%) scale(0);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
   opacity: 0;
-  fill: #ffdb55;
+  transition: all 0.2s ease;
 }
 
-.c-room {
-  display: flex;
-  flex-direction: column;
-  background: #a3bcc9;
-  padding: 1em;
-  margin: 0 0.5em;
+.c-mobile-nav__body {
+  position: relative;
+  background-color: #4263eb;
+  color: white;
+  padding: 1.7142857143rem;
+  height: 100%;
+  translate: -100% 0;
+  transition: all 0.2s ease;
 }
-.c-room__name {
-  font-family: Roboto;
-  font-size: 1.25em;
-  font-weight: 100;
-  text-align: center;
-  margin-bottom: 12px;
-  color: #38434a;
+
+/*
+  State: has-mobile-nav
+  ---
+  The has-mobile-nav state is to show the mobile nav and to prevent the body from scrolling when the mobile nav is open
+*/
+.has-mobile-nav {
+  overflow: hidden;
 }
-.c-room__icon {
-  margin-bottom: 20px;
+.has-mobile-nav .c-mobile-nav {
+  pointer-events: auto;
 }
-.c-room--wait .c-fancy-bulb__light {
-  opacity: 1;
-  transform: translate(0) scale(1);
-  transition: all 0.14s ease-in;
-  fill: rgb(248, 238, 203);
+.has-mobile-nav .c-mobile-nav__overlay {
+  opacity: 0.25;
+  opacity: 0.5;
 }
-.c-room--on .c-fancy-bulb__light {
-  opacity: 1;
-  transform: translate(0) scale(1);
-  transition: all 0.14s ease-in;
-  fill: #ffdb55;
-}
-.c-room--on .c-fancy-bulb__streaks--left {
-  animation: move-left 0.38s ease-out, width-to-zero 0.38s ease-out;
-  animation-delay: 0.14s;
-}
-.c-room--on .c-fancy-bulb__streaks--left:before {
-  animation: width-to-zero 0.38s ease-out, move-up 0.38s ease-out;
-  animation-delay: 0.14s;
-}
-.c-room--on .c-fancy-bulb__streaks--left:after {
-  animation: width-to-zero 0.38s ease-out, move-down 0.38s ease-out;
-  animation-delay: 0.14s;
-}
-.c-room--on .c-fancy-bulb__streaks--right {
-  animation: move-right 0.38s ease-out, width-to-zero 0.38s ease-out;
-  animation-delay: 0.14s;
-}
-.c-room--on .c-fancy-bulb__streaks--right:before {
-  animation: width-to-zero 0.38s ease-out, move-up 0.38s ease-out;
-  animation-delay: 0.14s;
-}
-.c-room--on .c-fancy-bulb__streaks--right:after {
-  animation: width-to-zero 0.38s ease-out, move-down 0.38s ease-out;
-  animation-delay: 0.14s;
-}
-.c-room--on .c-power-btn {
-  background: #58c48d;
-}
-.c-room--on .c-power-btn:active {
-  box-shadow: inset 0px 6px 8px -1px #41b77b;
+.has-mobile-nav .c-mobile-nav__body {
+  translate: 0 0;
 }
 
 /*---------------------------------------/*
  # UTILITIES
 /*---------------------------------------*/
-/* body.u-active {
-  background: #f3f7f9;
-} */
+/*
+    Utilities: Colors
+    ---
+    Utility classes to set the color of an element
+*/
+.u-color-text-lighter {
+  color: #868e96;
+}
+
+/*
+    Utilities: Max widths
+    ---
+    max-width utility classes
+*/
+.u-max-width-s {
+  max-width: 37.5rem;
+}
+
+.u-max-width-m {
+  max-width: 60rem;
+}
+
+.u-max-width-l {
+  max-width: 87.5rem;
+}
+
+/*
+    Utitlities: whitespace
+    ---
+    Utility classes to put specific margins and padding onto elements
+*/
+.u-pt-clear {
+  padding-top: 0;
+}
+
+.u-mb-clear {
+  margin-bottom: 0;
+}
+
+.u-mb-xxs {
+  margin-bottom: 0.5714285714rem;
+}
+
+.u-mb-xs {
+  margin-bottom: 0.8571428571rem;
+}
+
+.u-mb-s {
+  margin-bottom: 1.1428571429rem;
+}
+
+.u-mb-m {
+  margin-bottom: 1.7142857143rem;
+}
+
+.u-mb-l {
+  margin-bottom: 2.2857142857rem;
+}
+
+.u-mb-xl {
+  margin-bottom: 3.4285714286rem;
+}
+
+/*
+  Utilities: Font size
+  ---
+  Font size utility classes
+*/
+/*
+    Utilities: Widths
+    ---
+    Width utility classes
+*/
+.u-flex-basis-auto {
+  flex-basis: auto;
+}
+
+.u-1-of-2 {
+  flex-basis: 50% !important;
+}
+
+.u-2-of-2 {
+  flex-basis: 100% !important;
+}
+
+.u-1-of-3 {
+  flex-basis: 33.3333333333% !important;
+}
+
+.u-2-of-3 {
+  flex-basis: 66.6666666667% !important;
+}
+
+.u-3-of-3 {
+  flex-basis: 100% !important;
+}
+
+.u-1-of-4 {
+  flex-basis: 25% !important;
+}
+
+.u-2-of-4 {
+  flex-basis: 50% !important;
+}
+
+.u-3-of-4 {
+  flex-basis: 75% !important;
+}
+
+.u-4-of-4 {
+  flex-basis: 100% !important;
+}
+
+.u-1-of-5 {
+  flex-basis: 20% !important;
+}
+
+.u-2-of-5 {
+  flex-basis: 40% !important;
+}
+
+.u-3-of-5 {
+  flex-basis: 60% !important;
+}
+
+.u-4-of-5 {
+  flex-basis: 80% !important;
+}
+
+.u-5-of-5 {
+  flex-basis: 100% !important;
+}
+
+.u-1-of-6 {
+  flex-basis: 16.6666666667% !important;
+}
+
+.u-2-of-6 {
+  flex-basis: 33.3333333333% !important;
+}
+
+.u-3-of-6 {
+  flex-basis: 50% !important;
+}
+
+.u-4-of-6 {
+  flex-basis: 66.6666666667% !important;
+}
+
+.u-5-of-6 {
+  flex-basis: 83.3333333333% !important;
+}
+
+.u-6-of-6 {
+  flex-basis: 100% !important;
+}
+
+@media (min-width: 36.0625em) {
+  .u-1-of-2-bp1 {
+    flex-basis: 50% !important;
+  }
+  .u-2-of-2-bp1 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-3-bp1 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-2-of-3-bp1 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-3-of-3-bp1 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-4-bp1 {
+    flex-basis: 25% !important;
+  }
+  .u-2-of-4-bp1 {
+    flex-basis: 50% !important;
+  }
+  .u-3-of-4-bp1 {
+    flex-basis: 75% !important;
+  }
+  .u-4-of-4-bp1 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-5-bp1 {
+    flex-basis: 20% !important;
+  }
+  .u-2-of-5-bp1 {
+    flex-basis: 40% !important;
+  }
+  .u-3-of-5-bp1 {
+    flex-basis: 60% !important;
+  }
+  .u-4-of-5-bp1 {
+    flex-basis: 80% !important;
+  }
+  .u-5-of-5-bp1 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-6-bp1 {
+    flex-basis: 16.6666666667% !important;
+  }
+  .u-2-of-6-bp1 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-3-of-6-bp1 {
+    flex-basis: 50% !important;
+  }
+  .u-4-of-6-bp1 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-5-of-6-bp1 {
+    flex-basis: 83.3333333333% !important;
+  }
+  .u-6-of-6-bp1 {
+    flex-basis: 100% !important;
+  }
+}
+@media (min-width: 48.0625em) {
+  .u-1-of-2-bp2 {
+    flex-basis: 50% !important;
+  }
+  .u-2-of-2-bp2 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-3-bp2 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-2-of-3-bp2 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-3-of-3-bp2 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-4-bp2 {
+    flex-basis: 25% !important;
+  }
+  .u-2-of-4-bp2 {
+    flex-basis: 50% !important;
+  }
+  .u-3-of-4-bp2 {
+    flex-basis: 75% !important;
+  }
+  .u-4-of-4-bp2 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-5-bp2 {
+    flex-basis: 20% !important;
+  }
+  .u-2-of-5-bp2 {
+    flex-basis: 40% !important;
+  }
+  .u-3-of-5-bp2 {
+    flex-basis: 60% !important;
+  }
+  .u-4-of-5-bp2 {
+    flex-basis: 80% !important;
+  }
+  .u-5-of-5-bp2 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-6-bp2 {
+    flex-basis: 16.6666666667% !important;
+  }
+  .u-2-of-6-bp2 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-3-of-6-bp2 {
+    flex-basis: 50% !important;
+  }
+  .u-4-of-6-bp2 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-5-of-6-bp2 {
+    flex-basis: 83.3333333333% !important;
+  }
+  .u-6-of-6-bp2 {
+    flex-basis: 100% !important;
+  }
+}
+@media (min-width: 62.0625em) {
+  .u-1-of-2-bp3 {
+    flex-basis: 50% !important;
+  }
+  .u-2-of-2-bp3 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-3-bp3 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-2-of-3-bp3 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-3-of-3-bp3 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-4-bp3 {
+    flex-basis: 25% !important;
+  }
+  .u-2-of-4-bp3 {
+    flex-basis: 50% !important;
+  }
+  .u-3-of-4-bp3 {
+    flex-basis: 75% !important;
+  }
+  .u-4-of-4-bp3 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-5-bp3 {
+    flex-basis: 20% !important;
+  }
+  .u-2-of-5-bp3 {
+    flex-basis: 40% !important;
+  }
+  .u-3-of-5-bp3 {
+    flex-basis: 60% !important;
+  }
+  .u-4-of-5-bp3 {
+    flex-basis: 80% !important;
+  }
+  .u-5-of-5-bp3 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-6-bp3 {
+    flex-basis: 16.6666666667% !important;
+  }
+  .u-2-of-6-bp3 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-3-of-6-bp3 {
+    flex-basis: 50% !important;
+  }
+  .u-4-of-6-bp3 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-5-of-6-bp3 {
+    flex-basis: 83.3333333333% !important;
+  }
+  .u-6-of-6-bp3 {
+    flex-basis: 100% !important;
+  }
+}
+@media (min-width: 75.0625em) {
+  .u-1-of-2-bp4 {
+    flex-basis: 50% !important;
+  }
+  .u-2-of-2-bp4 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-3-bp4 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-2-of-3-bp4 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-3-of-3-bp4 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-4-bp4 {
+    flex-basis: 25% !important;
+  }
+  .u-2-of-4-bp4 {
+    flex-basis: 50% !important;
+  }
+  .u-3-of-4-bp4 {
+    flex-basis: 75% !important;
+  }
+  .u-4-of-4-bp4 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-5-bp4 {
+    flex-basis: 20% !important;
+  }
+  .u-2-of-5-bp4 {
+    flex-basis: 40% !important;
+  }
+  .u-3-of-5-bp4 {
+    flex-basis: 60% !important;
+  }
+  .u-4-of-5-bp4 {
+    flex-basis: 80% !important;
+  }
+  .u-5-of-5-bp4 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-6-bp4 {
+    flex-basis: 16.6666666667% !important;
+  }
+  .u-2-of-6-bp4 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-3-of-6-bp4 {
+    flex-basis: 50% !important;
+  }
+  .u-4-of-6-bp4 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-5-of-6-bp4 {
+    flex-basis: 83.3333333333% !important;
+  }
+  .u-6-of-6-bp4 {
+    flex-basis: 100% !important;
+  }
+}
+@media (min-width: 87.5625em) {
+  .u-1-of-2-bp5 {
+    flex-basis: 50% !important;
+  }
+  .u-2-of-2-bp5 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-3-bp5 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-2-of-3-bp5 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-3-of-3-bp5 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-4-bp5 {
+    flex-basis: 25% !important;
+  }
+  .u-2-of-4-bp5 {
+    flex-basis: 50% !important;
+  }
+  .u-3-of-4-bp5 {
+    flex-basis: 75% !important;
+  }
+  .u-4-of-4-bp5 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-5-bp5 {
+    flex-basis: 20% !important;
+  }
+  .u-2-of-5-bp5 {
+    flex-basis: 40% !important;
+  }
+  .u-3-of-5-bp5 {
+    flex-basis: 60% !important;
+  }
+  .u-4-of-5-bp5 {
+    flex-basis: 80% !important;
+  }
+  .u-5-of-5-bp5 {
+    flex-basis: 100% !important;
+  }
+  .u-1-of-6-bp5 {
+    flex-basis: 16.6666666667% !important;
+  }
+  .u-2-of-6-bp5 {
+    flex-basis: 33.3333333333% !important;
+  }
+  .u-3-of-6-bp5 {
+    flex-basis: 50% !important;
+  }
+  .u-4-of-6-bp5 {
+    flex-basis: 66.6666666667% !important;
+  }
+  .u-5-of-6-bp5 {
+    flex-basis: 83.3333333333% !important;
+  }
+  .u-6-of-6-bp5 {
+    flex-basis: 100% !important;
+  }
+}
