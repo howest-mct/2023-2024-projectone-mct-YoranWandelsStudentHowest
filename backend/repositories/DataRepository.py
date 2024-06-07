@@ -47,10 +47,10 @@ class DataRepository:
         sql = "SELECT * FROM historiek"
         return Database.get_rows(sql)
     
-    def create_gebruiker(gebruikersnaam, wachtwoord, email, voornaam, achternaam, geboortedatum, rol, accountstatus, aanmaakdatum, laatstingelogd):
-        sql = "INSERT INTO gebruiker (GebruikerID, Gebruikersnaam, Wachtwoord, Email, Voornaam, Achternaam, Geboortedatum, Rol, AccountStatus, Aanmaakdatum, LaatstIngelogd) VALUES \
-        (%s,%s,%s,%s,%s)"
-        params = [gebruikersnaam, wachtwoord, email, voornaam, achternaam, geboortedatum, rol, accountstatus, aanmaakdatum, laatstingelogd]
+    def create_gebruiker(gebruikersnaam, wachtwoord, email, aanmaakdatum):
+        sql = "INSERT INTO gebruiker (Gebruikersnaam, Wachtwoord, Email, Aanmaakdatum) VALUES \
+        (%s,%s,%s,%s)"
+        params = [gebruikersnaam, wachtwoord, email,aanmaakdatum]
         return Database.execute_sql(sql, params)
 
 
