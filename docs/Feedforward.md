@@ -108,3 +108,18 @@ Dit is de feedback op mijn vragen.
 - feedback 2:
 
     - ip adress gebruiken als url, socketio server starten in de backend
+
+## MVP2 (Datum: 4/7/2024)
+
+Lector: Stijn, Pieter-Jan, Frederik
+
+Vragen voor dit gesprek:
+
+ - vraag 1:
+
+    - Raspberry pi valt vaak uit
+
+Dit is de feedback op mijn vragen.
+
+    - feedback 1:
+        - alles was in orde
