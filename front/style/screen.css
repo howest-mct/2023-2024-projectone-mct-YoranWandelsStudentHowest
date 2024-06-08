@@ -666,6 +666,13 @@ input {
 }
 
 /*
+  Components: error
+*/
+.c-error {
+  color: #e03131;
+}
+
+/*
   Components: btn
 */
 .c-btn {
@@ -678,6 +685,10 @@ input {
   color: white;
   border: 2px solid;
   justify-content: center;
+}
+
+.c-btn:hover {
+  cursor: pointer;
 }
 
 /*

@@ -4,7 +4,7 @@ const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
 
 // #region ***  DOM references                           ***********
-let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement;
+let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement, error;
 const maxWater = 810;
 const maxProtein = 100;
 const maxCreatine = 100;
@@ -179,10 +179,10 @@ const listenToClickRegister = function () {
         };
         handleData("http://192.168.168.169:5000/api/v1/gebruiker/", callbackAddGebruiker, null, 'POST', JSON.stringify(jsonobject));
       } else {
-        console.log('Passwords not equal');
+        error.innerHTML = 'Passwords not equal';
       }
     } else {
-      console.log('All fields are required.');
+      error.innerHTML = 'All fields are required';
     }
   });
 };
@@ -313,6 +313,7 @@ const init = function () {
   overview = document.querySelector('.c-dashboard');
   statusElement = document.querySelector('#status');
   bottleElement = document.querySelectorAll('.c-svg__bottle')
+  error = document.querySelector('.c-error')
   listenToUI();
   listenToSocket();
   if (overview) {
