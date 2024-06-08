@@ -161,12 +161,18 @@ a:active {
 }
 
 input {
-  padding: 10px; /* Voeg wat padding toe voor een beter zichtbare grootte */
-  border-radius: 8px; /* Voeg een border-radius toe om de hoeken af te ronden */
-  border: 1px solid #ccc; /* Voeg een rand toe voor visuele scheiding */
-  width: 100%; /* Zorg ervoor dat het invoerveld de volledige breedte inneemt */
-  box-sizing: border-box; /* Zorg ervoor dat de padding en de rand de breedte niet vergroten */
-  margin-bottom: 10px; /* Voeg wat ruimte toe onder het invoerveld */
+  padding: 10px;
+  /* Voeg wat padding toe voor een beter zichtbare grootte */
+  border-radius: 8px;
+  /* Voeg een border-radius toe om de hoeken af te ronden */
+  border: 1px solid #ccc;
+  /* Voeg een rand toe voor visuele scheiding */
+  width: 100%;
+  /* Zorg ervoor dat het invoerveld de volledige breedte inneemt */
+  box-sizing: border-box;
+  /* Zorg ervoor dat de padding en de rand de breedte niet vergroten */
+  margin-bottom: 10px;
+  /* Voeg wat ruimte toe onder het invoerveld */
 }
 
 /*---------------------------------------/*
@@ -235,9 +241,14 @@ input {
 .o-row--xl {
   padding: 4.5714285714rem;
 }
+@media (max-width: 36.0625em) {
+  .o-row--xl {
+    padding: 2.2857142857rem;
+  }
+}
 
 .o-row--l {
-  padding: 3.4285714286rem 1.7142857143rem 1.7142857143rem;
+  padding: 3.4285714286rem 1.7142857143rem;
   background-color: #edf2f5;
 }
 
@@ -433,7 +444,6 @@ input {
 .c-header {
   display: flex;
   align-items: center;
-  gap: 1.7142857143rem;
   justify-content: space-between;
 }
 @media (max-width: 36.0625em) {
@@ -541,7 +551,8 @@ input {
 .c-form {
   background-color: white;
   border-radius: 0.8571428571rem;
-  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1); /* Schaduw met zachtere randen */
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
+  /* Schaduw met zachtere randen */
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -560,7 +571,13 @@ input {
   Components: svg
 */
 .c-svg__bottle {
-  stroke: red;
+  stroke: #e03131;
+  color: #e03131;
+}
+
+.c-svg__bottle--active {
+  stroke: #2f9e44;
+  color: #2f9e44;
 }
 
 /*
@@ -569,51 +586,71 @@ input {
 .c-main-container {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* Ensures alignment of charts at the top */
-  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .c-main-container {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* Ensures alignment of charts at the top */
-  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .c-chart-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px; /* Spacing between charts */
+  gap: 3.4285714286rem;
 }
 
 .c-chart {
   max-width: 300px;
   max-height: 300px;
+  width: 100%;
+  height: auto;
 }
 
 .c-chart__form {
   background-color: white;
-  border-radius: 10px; /* Example size, adjust as needed */
-  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1); /* Schaduw met zachtere randen */
+  border-radius: 10px;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: center;
-  padding: 20px;
-  margin: 10px; /* Optional: adds spacing around the form */
+  padding: 3.4285714286rem 1.7142857143rem;
 }
 
-/* Media query for smaller screens */
+@media (max-width: 75.0625em) {
+  .c-main-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 4.5714285714rem;
+  }
+}
 @media (max-width: 48.0625em) {
   .c-main-container {
     flex-direction: column;
-    align-items: center; /* Center the charts horizontally */
+    align-items: center;
+    gap: 4.5714285714rem;
   }
   .c-chart-container {
     flex-direction: column;
   }
   .c-chart__form {
-    width: auto; /* Ensure this matches the width of the charts plus some padding */
+    width: auto;
   }
 }
+/*
+  Components: content
+*/
+.c-content {
+  justify-content: space-between;
+}
+@media (max-width: 62.0625em) {
+  .c-content {
+    justify-content: center;
+  }
+}
+
 /*
   Components: shake
 */
@@ -625,6 +662,7 @@ input {
 
 .c-shake__powder {
   display: flex;
+  gap: 1.7142857143rem;
 }
 
 /*
