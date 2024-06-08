@@ -168,16 +168,24 @@ const listenToClickRegister = function () {
     const email = document.querySelector('#email').value;
     const password = document.querySelector('#password').value;
     const passwordConfirm = document.querySelector("#confirm-password").value;
+    const errorElement = document.querySelector('.js-error');
     console.log(username, email, password, passwordConfirm);
+    
     if (username && email && password && passwordConfirm) {
-      console.log(username, email, password, passwordConfirm);
-      if (password == passwordConfirm) {
+      if (password === passwordConfirm) {
         const jsonobject = {
           Gebruikersnaam: username,
           Wachtwoord: password,
           Email: email
         };
-        handleData("http://192.168.168.169:5000/api/v1/gebruiker/", callbackAddGebruiker, null, 'POST', JSON.stringify(jsonobject));
+        handleData("http://192.168.168.169:5000/api/v1/gebruiker/", function() {
+          console.log('nieuwe gebruiker toegevoegt');
+          error.innerHTML = '';
+          document.querySelector('#gebruikersnaam').value = '';
+          document.querySelector('#email').value = '';
+          document.querySelector('#password').value = '';
+          document.querySelector("#confirm-password").value = '';
+        }, null, 'POST', JSON.stringify(jsonobject));
       } else {
         error.innerHTML = 'Passwords not equal';
       }
@@ -186,6 +194,7 @@ const listenToClickRegister = function () {
     }
   });
 };
+
 
 const listenToClickLogin = function () {
   const button = document.querySelector('.js-login');

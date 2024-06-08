@@ -13,6 +13,7 @@ from repositories.DataRepository import DataRepository
 from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
+import bcrypt
 
 endpoint = '/api/v1'
 
@@ -64,6 +65,9 @@ wp_pin = 0
 stop_threads = False
 RotaryCounter = 0
 
+# account
+userid = None
+
 # API ENDPOINTS
 @app.route('/')
 def hallo():
@@ -110,15 +114,24 @@ def create_gebruiker():
     if request.method == 'POST':
         gegevens = DataRepository.json_or_formdata(request)
         current_datetime = datetime.datetime.now()
-        new_gebruiker = DataRepository.create_gebruiker(gegevens['Gebruikersnaam'], hash(gegevens['Wachtwoord']), gegevens['Email'], current_datetime)
+        hashed_password = bcrypt.hashpw(gegevens['Wachtwoord'].encode('utf-8'), bcrypt.gensalt())
+        new_gebruiker = DataRepository.create_gebruiker(gegevens['Gebruikersnaam'], hashed_password.decode('utf-8'), gegevens['Email'], current_datetime)
         return jsonify(gebruikerid=new_gebruiker), 201
 
 @app.route(endpoint + '/inloggen/', methods=["POST"])
 def login_gebruiker():
     if request.method == 'POST':
         gegevens = DataRepository.json_or_formdata(request)
-        new_gebruiker = DataRepository
-        return jsonify(gebruikerid=new_gebruiker), 201
+        user = DataRepository.get_user_by_email(gegevens['Email'])
+        
+        if user and bcrypt.checkpw(gegevens['Wachtwoord'].encode('utf-8'), user['Wachtwoord'].encode('utf-8')):
+            global userid
+            userid = user['GebruikerID']
+            socketio.emit()
+            return jsonify(gebruikerid=userid), 200
+        else:
+            print('foute gegevens')
+            return jsonify(error='Invalid credentials'), 401
 
 # SOCKET IO
 @socketio.on('connect')
@@ -133,6 +146,7 @@ def send_data_watersensor():
     # create_historiek = DataRepository.create_historiek(idwatersensor, 1, current_datetime, waterdist, 'water afstand sensor test')
     # if create_historiek:
     #     print('New history entry created successfully.')
+    print(userid)
     socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
 def send_data_bottlesensor():
