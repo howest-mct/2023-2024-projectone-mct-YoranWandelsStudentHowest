@@ -4,7 +4,7 @@ const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
 
 // #region ***  DOM references                           ***********
-let statusElement, waterChart, proteinChart, creatineChart, registerContainer, register, login;
+let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement;
 const maxWater = 810;
 const maxProtein = 100;
 const maxCreatine = 100;
@@ -115,7 +115,7 @@ const listenToSocket = function () {
   socketio.on('connect', function () {
     console.log('verbonden met socket webserver');
   });
-  if (register) {
+  if (overview) {
     socketio.on('B2F_waterlevel', function (object) {
       console.log('new waterlevel');
       const remainingWater = object.waterlevel; // dynamically fetched
@@ -123,17 +123,6 @@ const listenToSocket = function () {
       waterChart.data.datasets[0].data[0] = remainingWater;
       waterChart.data.datasets[0].data[1] = maxWater - remainingWater;
       waterChart.update();
-    });
-    socketio.on('B2F_bottlestatus', function (object) {
-      console.log('new bottlestatus');
-      const bottlestatus = object.status;
-      if (bottlestatus) {
-        statusElement.innerHTML = "Status: Bottle Present";
-        statusElement.style.color = "green";
-      } else {
-        statusElement.innerHTML = "Status: No Bottle";
-        statusElement.style.color = "red";
-      }
     });
     socketio.on('B2F_proteinweight', function (object) {
       console.log('new proteinstatus');
@@ -150,6 +139,23 @@ const listenToSocket = function () {
       creatineChart.data.datasets[0].data[0] = creatineweight;
       creatineChart.data.datasets[0].data[1] = maxCreatine - creatineweight;
       creatineChart.update();
+    });
+  }
+  if (shake) {
+    socketio.on('B2F_bottlestatus', function (object) {
+      console.log('new bottlestatus');
+      const bottlestatus = object.status;
+      if (bottlestatus) {
+        statusElement.innerHTML = "Status: Bottle Present";
+        bottleElement.forEach(element => {
+          element.classList.add('c-svg__bottle--active');
+        });
+      } else {
+        statusElement.innerHTML = "Status: No Bottle";
+        bottleElement.forEach(element => {
+          element.classList.remove('c-svg__bottle--active');
+        });
+      }
     });
   }
 };
@@ -220,9 +226,7 @@ const showWaterlevelTest = function () {
 };
 
 const showProteinweightTest = function () {
-  console.log('get proteine weight');
   const remainingProtein = 500;
-  console.info(remainingProtein);
   // remainingWater = jsonObject
   const data = {
     labels: ['Remaining Protein'],
@@ -244,9 +248,7 @@ const showProteinweightTest = function () {
 };
 
 const showCreatineweightTest = function () {
-  console.log('get creatine weight');
   const remainingCreatine = 500;
-  console.info(remainingCreatine);
   // remainingWater = jsonObject
   const data = {
     labels: ['Remaining Creatine'],
@@ -305,25 +307,26 @@ const showShakeGraphTest = function () {
 
 const init = function () {
   console.info('DOM geladen');
-  statusElement = document.querySelector('#status');
-  registerContainer = document.querySelector('.register-container');
   register = document.querySelector('.js-register');
   login = document.querySelector('.js-login');
+  shake = document.querySelector('.js-shake');
+  overview = document.querySelector('.c-dashboard');
+  statusElement = document.querySelector('#status');
+  bottleElement = document.querySelectorAll('.c-svg__bottle')
   listenToUI();
   listenToSocket();
+  if (overview) {
+    showWaterlevelTest();
+    showProteinweightTest();
+    showCreatineweightTest();
+    showShakeGraphTest();
 
-  showWaterlevelTest();
-  showProteinweightTest();
-  showCreatineweightTest();
-  showShakeGraphTest();
-
-  getHistoriek();
-  getWaterlevel();
-  getProteinweight();
-  getCreatineweight();
-  if (register) {
+    // getHistoriek();
+    // getWaterlevel();
+    // getProteinweight();
+    // getCreatineweight();
   }
-  if (registerContainer) {
+  if (register) {
     listenToClickRegister();
   }
   if (login) {

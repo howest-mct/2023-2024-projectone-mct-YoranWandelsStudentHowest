@@ -177,7 +177,7 @@ def read_sensors():
     time_all_out = time.time()
     print('**** Reading sensors ****')
     while not stop_threads:
-        if (time.time() - time_all_out) >= 5:
+        if (time.time() - time_all_out) >= 1:
             print('sending data')
             send_data_watersensor()
             send_data_bottlesensor()
@@ -229,21 +229,21 @@ if __name__ == '__main__':
 
         thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')
-        # while True:
-        #     try:
-        #         current_datetime = datetime.datetime.now()
-        #         proteinweight = hx_protein.get_weight_mean()
-        #         print(f"Protein Weight: {proteinweight} at {current_datetime}")
-        #         current_datetime = datetime.datetime.now()
-        #         creatineweight = hx_creatine.get_weight_mean()
-        #         print(f"Creatine Weight: {creatineweight} at {current_datetime}")
-        #         time.sleep(1)
-        #     except Exception as ex:
-        #         print(ex)
+        while True:
+            try:
+                current_datetime = datetime.datetime.now()
+                proteinweight = hx_protein.get_weight_mean()
+                print(f"Protein Weight: {proteinweight} at {current_datetime}")
+                current_datetime = datetime.datetime.now()
+                creatineweight = hx_creatine.get_weight_mean()
+                print(f"Creatine Weight: {creatineweight} at {current_datetime}")
+                time.sleep(1)
+            except Exception as ex:
+                print(ex)
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:
         print("Stopping threads and cleaning up GPIO")
         stop_threads = True
-        # thread.join()  # Ensure the thread has completed
+        thread.join()  # Ensure the thread has completed
         GPIO.cleanup()
