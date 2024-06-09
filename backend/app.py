@@ -241,17 +241,18 @@ if __name__ == '__main__':
         # except Exception as ex:
         #     print(ex)
 
-        thread = start_thread()
-        socketio.run(app, debug=False, host='0.0.0.0')
+        # thread = start_thread()
+        # socketio.run(app, debug=False, host='0.0.0.0')
         while True:
             try:
-                current_datetime = datetime.datetime.now()
-                proteinweight = hx_protein.get_weight_mean()
-                print(f"Protein Weight: {proteinweight} at {current_datetime}")
-                current_datetime = datetime.datetime.now()
-                creatineweight = hx_creatine.get_weight_mean()
-                print(f"Creatine Weight: {creatineweight} at {current_datetime}")
-                time.sleep(1)
+                # current_datetime = datetime.datetime.now()
+                # proteinweight = hx_protein.get_weight_mean()
+                # print(f"Protein Weight: {proteinweight} at {current_datetime}")
+                # current_datetime = datetime.datetime.now()
+                # creatineweight = hx_creatine.get_weight_mean()
+                # print(f"Creatine Weight: {creatineweight} at {current_datetime}")
+                Proteinmotor.draaien_links()
+                # Creatinemotor.draaien_rechts()
             except Exception as ex:
                 print(ex)
     except KeyboardInterrupt:
@@ -259,5 +260,5 @@ if __name__ == '__main__':
     finally:
         print("Stopping threads and cleaning up GPIO")
         stop_threads = True
-        thread.join()  # Ensure the thread has completed
+        # thread.join()  # Ensure the thread has completed
         GPIO.cleanup()
