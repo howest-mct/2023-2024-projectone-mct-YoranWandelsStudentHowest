@@ -30,11 +30,6 @@ class StepperMotor:
             GPIO.output(self.pins[i], self.steps[n][i])
         time.sleep(0.0009)
 
-    # Draai naar rechts
-    def draaien_rechts(self):
-        for i in range(4096):
-            self.do_step(self.theStep)
-            self.theStep = (self.theStep + 1) % 8
 
     # Draai naar rechts met een bepaald aantal graden
     def draaien_rechts_graden(self, graden):
@@ -45,10 +40,16 @@ class StepperMotor:
             self.do_step(self.theStep)
             self.theStep = (self.theStep + 1) % 8
 
+    # Draai naar rechts
+    def draaien_rechts(self, theRange):
+        for i in range(theRange): # 19505 stappen == 20 seconden, 1 gram poeder
+            self.do_step(self.theStep)
+            self.theStep = (self.theStep + 1) % 8
+
     # Draai naar links
-    def draaien_links(self):
+    def draaien_links(self,theRange=19505):
         global theStep
-        for i in range(4096):
+        for i in range(theRange): # 19505 stappen == 20 seconden, 1 gram poeder
             self.do_step(self.theStep)
             self.theStep = (self.theStep - 1) % 8
 
