@@ -52,5 +52,10 @@ class DataRepository:
         (%s,%s,%s,%s)"
         params = [gebruikersnaam, wachtwoord, email,aanmaakdatum]
         return Database.execute_sql(sql, params)
+    
+    def get_user_by_email(email):
+        sql="SELECT * FROM gebruiker where Email = %s"
+        params = [email]
+        return Database.get_one_row(sql, params)
 
 

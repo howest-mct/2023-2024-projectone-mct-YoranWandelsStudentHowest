@@ -15,3 +15,5 @@ class Waterpump:
     def turn_off(self):
         GPIO.output(self.pin, GPIO.LOW)
         print("Water pump is now OFF")
+
+    #ong 7 sec per 100ml water

@@ -6,8 +6,8 @@ const socketio = io(lanIP);
 // #region ***  DOM references                           ***********
 let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement, error;
 const maxWater = 810;
-const maxProtein = 100;
-const maxCreatine = 100;
+const maxProtein = 164;
+const maxCreatine = 161;
 // #endregion
 
 // #region ***  Callback-Visualisation - show___         ***********
@@ -128,16 +128,16 @@ const listenToSocket = function () {
       console.log('new proteinstatus');
       const proteinweight = object.weight;
       console.info(proteinweight);
-      proteinChart.data.datasets[0].data[0] = proteinweight;
-      proteinChart.data.datasets[0].data[1] = maxProtein - proteinweight;
+      proteinChart.data.datasets[0].data[0] = maxProtein - proteinweight;
+      proteinChart.data.datasets[0].data[1] = proteinweight;
       proteinChart.update();
     });
     socketio.on('B2F_creatineweight', function (object) {
       console.log('new creatinestatus');
       const creatineweight = object.weight;
       console.info(creatineweight);
-      creatineChart.data.datasets[0].data[0] = creatineweight;
-      creatineChart.data.datasets[0].data[1] = maxCreatine - creatineweight;
+      creatineChart.data.datasets[0].data[0] = maxCreatine - creatineweight;
+      creatineChart.data.datasets[0].data[1] = creatineweight;
       creatineChart.update();
     });
   }
@@ -168,16 +168,24 @@ const listenToClickRegister = function () {
     const email = document.querySelector('#email').value;
     const password = document.querySelector('#password').value;
     const passwordConfirm = document.querySelector("#confirm-password").value;
+    const errorElement = document.querySelector('.js-error');
     console.log(username, email, password, passwordConfirm);
+    
     if (username && email && password && passwordConfirm) {
-      console.log(username, email, password, passwordConfirm);
-      if (password == passwordConfirm) {
+      if (password === passwordConfirm) {
         const jsonobject = {
           Gebruikersnaam: username,
           Wachtwoord: password,
           Email: email
         };
-        handleData("http://192.168.168.169:5000/api/v1/gebruiker/", callbackAddGebruiker, null, 'POST', JSON.stringify(jsonobject));
+        handleData("http://192.168.168.169:5000/api/v1/gebruiker/", function() {
+          console.log('nieuwe gebruiker toegevoegt');
+          error.innerHTML = '';
+          document.querySelector('#gebruikersnaam').value = '';
+          document.querySelector('#email').value = '';
+          document.querySelector('#password').value = '';
+          document.querySelector("#confirm-password").value = '';
+        }, null, 'POST', JSON.stringify(jsonobject));
       } else {
         error.innerHTML = 'Passwords not equal';
       }
@@ -186,6 +194,7 @@ const listenToClickRegister = function () {
     }
   });
 };
+
 
 const listenToClickLogin = function () {
   const button = document.querySelector('.js-login');
