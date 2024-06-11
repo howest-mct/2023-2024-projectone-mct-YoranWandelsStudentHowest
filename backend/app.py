@@ -60,14 +60,16 @@ hx2_dt = 1
 # waterpump
 wp_pin = 0
 
-
 stop_threads = False
 RotaryCounter = 0
 
 # API ENDPOINTS
+
+
 @app.route('/')
 def hallo():
     return "Server is running, er zijn momenteel geen API endpoints beschikbaar."
+
 
 @app.route(endpoint + '/historiek/', methods=['GET'])
 def get_bestemmingen():
@@ -78,6 +80,7 @@ def get_bestemmingen():
         else:
             return jsonify(message='error'), 404
 
+
 @app.route(endpoint + '/waterlevel/', methods=["GET"])
 def get_waterlevel():
     if request.method == 'GET':
@@ -86,6 +89,7 @@ def get_waterlevel():
             return jsonify(waterlevel=waterlevel), 200
         else:
             return jsonify(message='error'), 404
+
 
 @app.route(endpoint + '/proteinweight/', methods=["GET"])
 def get_proteinweight():
@@ -96,6 +100,7 @@ def get_proteinweight():
         else:
             return jsonify(message='error'), 404
 
+
 @app.route(endpoint + '/creatineweight/', methods=["GET"])
 def get_creatineweight():
     if request.method == 'GET':
@@ -105,13 +110,16 @@ def get_creatineweight():
         else:
             return jsonify(message='error'), 404
 
+
 @app.route(endpoint + '/gebruiker/', methods=["POST"])
 def create_gebruiker():
     if request.method == 'POST':
         gegevens = DataRepository.json_or_formdata(request)
         current_datetime = datetime.datetime.now()
-        new_gebruiker = DataRepository.create_gebruiker(gegevens['Gebruikersnaam'], hash(gegevens['Wachtwoord']), gegevens['Email'], current_datetime)
+        new_gebruiker = DataRepository.create_gebruiker(gegevens['Gebruikersnaam'], hash(
+            gegevens['Wachtwoord']), gegevens['Email'], current_datetime)
         return jsonify(gebruikerid=new_gebruiker), 201
+
 
 @app.route(endpoint + '/inloggen/', methods=["POST"])
 def login_gebruiker():
@@ -121,12 +129,16 @@ def login_gebruiker():
         return jsonify(gebruikerid=new_gebruiker), 201
 
 # SOCKET IO
+
+
 @socketio.on('connect')
 def initial_connection():
-    print('A new client connect')
+    print('A new client connected')
+
 
 def send_data_watersensor():
-    idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
+    idwatersensor = (DataRepository.get_id_sensor(
+        'Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
     current_datetime = datetime.datetime.now()
     waterdist = round(watersensor.distance(), 2)
     print(f"Water distance: {waterdist} at {current_datetime}")
@@ -135,20 +147,25 @@ def send_data_watersensor():
     #     print('New history entry created successfully.')
     socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
+
 def send_data_bottlesensor():
-    idbottlesensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
+    idbottlesensor = (DataRepository.get_id_sensor(
+        'Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
     current_datetime = datetime.datetime.now()
     bottledist = round(bottlesensor.distance(), 2)
     bottlestatus = 1 if bottledist < 100 else 0
-    print(f"Bottle acknowledged - distance: {bottledist} at {current_datetime}")
+    print(
+        f"Bottle acknowledged - distance: {bottledist} at {current_datetime}")
     # create_historiek = DataRepository.create_historiek(idbottlesensor, 1, current_datetime, bottledist, 'bottle sensor test')
     # if create_historiek:
     #     print('New history entry created successfully.')
     socketio.emit('B2F_bottlestatus', {'status': bottlestatus})
 
+
 def send_data_proteinweight():
     try:
-        idproteinweight = (DataRepository.get_id_sensor('Gewicht meten van de proteine'))['DeviceID']
+        idproteinweight = (DataRepository.get_id_sensor(
+            'Gewicht meten van de proteine'))['DeviceID']
         current_datetime = datetime.datetime.now()
         proteinweight = hx_protein.get_weight_mean()
         print(f"Protein Weight: {proteinweight} at {current_datetime}")
@@ -156,12 +173,14 @@ def send_data_proteinweight():
         # if create_historiek:
         #     print('New history entry created successfully.')
         socketio.emit('B2F_proteinweight', {'weight': proteinweight})
-    except:
-        print('protein weight error')
+    except Exception as e:
+        print(f'Protein weight error: {e}')
+
 
 def send_data_creatineweight():
     try:
-        idcreateineweight = (DataRepository.get_id_sensor('Gewicht meten van de creatine'))['DeviceID']
+        idcreateineweight = (DataRepository.get_id_sensor(
+            'Gewicht meten van de creatine'))['DeviceID']
         current_datetime = datetime.datetime.now()
         creatineweight = hx_creatine.get_data_mean()
         print(f"Creatine Weight: {creatineweight} at {current_datetime}")
@@ -169,11 +188,13 @@ def send_data_creatineweight():
         # if create_historiek:
         #     print('New history entry created successfully.')
         socketio.emit('B2F_creatineweight', {'weight': creatineweight})
-    except:
-        print('creatine weight error')
+    except Exception as e:
+        print(f'Creatine weight error: {e}')
+
 
 def read_sensors():
-    GPIO.setmode(GPIO.BCM)  # Ensure correct pin numbering mode within the thread
+    # Ensure correct pin numbering mode within the thread
+    GPIO.setmode(GPIO.BCM)
     time_all_out = time.time()
     print('**** Reading sensors ****')
     while not stop_threads:
@@ -185,13 +206,16 @@ def read_sensors():
             send_data_creatineweight()
             time_all_out = time.time()
 
+
 def start_thread():
     thread = threading.Thread(target=read_sensors)
     thread.start()
     return thread
 
+
 def my_callback_one(pin):
     print('button click')
+
 
 GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.add_event_detect(btn, GPIO.RISING, bouncetime=200)
@@ -229,6 +253,7 @@ if __name__ == '__main__':
 
         thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')
+<<<<<<< Updated upstream
         while True:
             try:
                 current_datetime = datetime.datetime.now()
@@ -240,10 +265,16 @@ if __name__ == '__main__':
                 time.sleep(1)
             except Exception as ex:
                 print(ex)
+=======
+>>>>>>> Stashed changes
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:
         print("Stopping threads and cleaning up GPIO")
         stop_threads = True
+<<<<<<< Updated upstream
         thread.join()  # Ensure the thread has completed
+=======
+        thread.join()  # Ensure the thread has completed before cleaning up GPIO
+>>>>>>> Stashed changes
         GPIO.cleanup()
