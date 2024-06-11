@@ -448,7 +448,7 @@ input {
 }
 @media (max-width: 36.0625em) {
   .c-header {
-    justify-content: center;
+    justify-content: space-between;
   }
 }
 
@@ -479,16 +479,16 @@ input {
   background-color: #228be6;
   border-radius: 2.2857142857rem;
 }
-@media (max-width: 48.0625em) {
-  .c-header__logo {
-    display: none;
-  }
-}
 
 .c-header__name {
   margin: 0;
   color: white;
   font-weight: 700;
+}
+@media (max-width: 48.0625em) {
+  .c-header__name {
+    display: none;
+  }
 }
 
 /*

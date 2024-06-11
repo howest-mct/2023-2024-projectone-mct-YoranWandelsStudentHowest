@@ -601,7 +601,7 @@ input {
   justify-content: space-between;
 
   @include mq(bp1, max) {
-    justify-content: center;
+    justify-content: space-between;
   }
 }
 
@@ -630,15 +630,15 @@ input {
   background-color: $color-primary;
   border-radius: $space-l;
 
-  @include mq(bp2, max) {
-    display: none;
-  }
 }
 
 .c-header__name {
   margin: 0;
   color: white;
   font-weight: 700;
+    @include mq(bp2, max) {
+    display: none;
+  }
 }
 
 /*

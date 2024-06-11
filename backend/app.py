@@ -150,10 +150,14 @@ class rotaryEncoder:
             idpowdermotor = (DataRepository.get_id_sensor('Stappenmotor om de auger te laten draaien van de creatine'))['DeviceID']
         current_datetime = datetime.datetime.now()
         print(f"new shake {self.powder}: {self.powderamount} at {current_datetime}")
-        create_historiek = DataRepository.create_historiek(idpowdermotor, userid, current_datetime, self.powderamount, 'nieuwe shake aangemaakt')
-        if create_historiek:
-            print('New history entry created successfully.')
-        #maak nog een dinges voor wateramount
+        # create_historiek = DataRepository.create_historiek(idpowdermotor, userid, current_datetime, self.powderamount, 'nieuwe shake aangemaakt')
+        # if create_historiek:
+        #     print('New history entry created successfully.')
+        #waterpump
+        idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
+        create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
+        # if create_historiek:
+        #     print('New history entry created successfully.')
         socketio.emit('B2F_shake', {'shakeamount': self.powderamount})
 
     def create_shake(self, powder='proteine', powderamount=1, wateramount=100):
@@ -208,10 +212,12 @@ class rotaryEncoder:
         elif self.clickc2 == True:
             self.lcd.send_instruction(0b11000000) #new line
             powder_display = f'{self.measurements_powder:02}' if self.measurements_powder < 10 else str(self.measurements_powder)
+            self.powderamount = self.measurements_powder
             self.lcd.write_message(powder_display)
         elif self.clickc3 == True:
             self.lcd.send_instruction(0b11000000) #new line
             water_display = f'{self.measurements_water:03}' if self.measurements_water < 100 else str(self.measurements_water)
+            self.wateramount = self.measurements_water
             self.lcd.write_message(water_display)
         elif self.clickc1 == False and self.clickc2 == False and self.clickc3 == False:
             if self.counter == 0:
@@ -247,8 +253,13 @@ class rotaryEncoder:
                 self.lcd.clear_display()
                 self.lcd.write_message('water (ml):')
             elif self.clickc3 == True:
+                global stop_threads
                 print(f'Powder: {self.powder}, Amount: {self.powderamount}g, Water: {self.wateramount}ml')
+                stop_threads = True
                 self.create_shake(self.powder, self.powderamount, self.wateramount)
+                stop_threads = False
+                # Restart the thread
+                start_thread()
                 self.clickc3 = False
                 self.lcd.clear_display()
             elif self.counter == 1:
@@ -277,34 +288,13 @@ def get_bestemmingen():
             return jsonify(historiek=historiek), 200
         else:
             return jsonify(message='error'), 404
-
-
-@app.route(endpoint + '/waterlevel/', methods=["GET"])
-def get_waterlevel():
+        
+@app.route(endpoint + '/shakehist/', methods=['GET'])
+def get_shake_data_user():
     if request.method == 'GET':
-        waterlevel = DataRepository.get_latest_waterlevel()
-        if waterlevel is not None:
-            return jsonify(waterlevel=waterlevel), 200
-        else:
-            return jsonify(message='error'), 404
-
-
-@app.route(endpoint + '/proteinweight/', methods=["GET"])
-def get_proteinweight():
-    if request.method == 'GET':
-        proteinweight = DataRepository.get_latest_proteinweight()
-        if proteinweight is not None:
-            return jsonify(proteinweight=proteinweight), 200
-        else:
-            return jsonify(message='error'), 404
-
-
-@app.route(endpoint + '/creatineweight/', methods=["GET"])
-def get_creatineweight():
-    if request.method == 'GET':
-        creatineweight = DataRepository.get_latest_creatineweight()
-        if creatineweight is not None:
-            return jsonify(creatineweight=creatineweight), 200
+        shakehistory = DataRepository.get_user_shake_data(userid)
+        if shakehistory is not None:
+            return jsonify(shake_history=shakehistory), 200
         else:
             return jsonify(message='error'), 404
 
@@ -348,9 +338,9 @@ def send_data_watersensor():
     current_datetime = datetime.datetime.now()
     waterdist = round(watersensor.distance(), 2)
     print(f"Water distance: {waterdist} at {current_datetime}")
-    create_historiek = DataRepository.create_historiek(idwatersensor, userid, current_datetime, waterdist, 'water afstand sensor')
-    if create_historiek:
-        print('New history entry created successfully.')
+    # create_historiek = DataRepository.create_historiek(idwatersensor, userid, current_datetime, waterdist, 'water afstand sensor')
+    # if create_historiek:
+    #     print('New history entry created successfully.')
     socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
 
@@ -361,9 +351,9 @@ def send_data_bottlesensor():
     bottledist = round(bottlesensor.distance(), 2)
     bottlestatus = 1 if bottledist < 100 else 0
     print(f"Bottle acknowledged - distance: {bottledist} at {current_datetime}")
-    create_historiek = DataRepository.create_historiek(idbottlesensor, userid, current_datetime, bottledist, 'bottle sensor ')
-    if create_historiek:
-        print('New history entry created successfully.')
+    # create_historiek = DataRepository.create_historiek(idbottlesensor, userid, current_datetime, bottledist, 'bottle sensor ')
+    # if create_historiek:
+    #     print('New history entry created successfully.')
     socketio.emit('B2F_bottlestatus', {'status': bottlestatus})
 
 
@@ -374,9 +364,9 @@ def send_data_proteinweight():
         current_datetime = datetime.datetime.now()
         proteinweight = hx_protein.get_weight_mean(20)
         print(f"Protein Weight: {proteinweight} at {current_datetime}")
-        create_historiek = DataRepository.create_historiek(idproteinweight, userid, current_datetime, proteinweight, 'protein weight')
-        if create_historiek:
-            print('New history entry created successfully.')
+        # create_historiek = DataRepository.create_historiek(idproteinweight, userid, current_datetime, proteinweight, 'protein weight')
+        # if create_historiek:
+        #     print('New history entry created successfully.')
         socketio.emit('B2F_proteinweight', {'weight': proteinweight})
     except Exception as e:
         print(f'Protein weight error: {e}')
@@ -390,8 +380,8 @@ def send_data_creatineweight():
         creatineweight = hx_creatine.get_weight_mean(20)
         print(f"Creatine Weight: {creatineweight} at {current_datetime}")
         create_historiek = DataRepository.create_historiek(idcreateineweight, userid, current_datetime, creatineweight, 'creatine weight')
-        if create_historiek:
-            print('New history entry created successfully.')
+        # if create_historiek:
+        #     print('New history entry created successfully.')
         socketio.emit('B2F_creatineweight', {'weight': creatineweight})
     except Exception as e:
         print(f'Creatine weight error: {e}')
@@ -402,7 +392,7 @@ def read_sensors():
     start_time = time.time()
     print('**** Reading sensors ****')
     while not stop_threads:
-        if (time.time() - start_time) >= 1:
+        if (time.time() - start_time) >= 5:
             print('sending data')
             send_data_watersensor()
             send_data_bottlesensor()
