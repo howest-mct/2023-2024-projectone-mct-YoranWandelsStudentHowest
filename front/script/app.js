@@ -4,16 +4,16 @@ const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
 
 // #region ***  DOM references                           ***********
-let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement, error;
+let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign;
 const maxWater = 810;
 const maxProtein = 164;
 const maxCreatine = 161;
-let proteinHistory = []
-let creatineHistory = []
+let proteinHistory = [];
+let creatineHistory = [];
 // #endregion
 
 // #region ***  Callback-Visualisation - show___         ***********
-const showWaterlevelTest = function () {
+const showWaterlevel = function () {
   const remainingWater = 400;
   // remainingWater = jsonObject
   const data = {
@@ -35,7 +35,7 @@ const showWaterlevelTest = function () {
   waterChart = new Chart(ctx, config);
 };
 
-const showProteinweightTest = function () {
+const showProteinweight = function () {
   const remainingProtein = 500;
   // remainingWater = jsonObject
   const data = {
@@ -57,7 +57,7 @@ const showProteinweightTest = function () {
   proteinChart = new Chart(ctx, config);
 };
 
-const showCreatineweightTest = function () {
+const showCreatineweight = function () {
   const remainingCreatine = 500;
   // remainingWater = jsonObject
   const data = {
@@ -105,10 +105,7 @@ const showShakeChart = function (jsonObject) {
     // Voer hier verdere acties uit met de gegevens, zoals het toevoegen aan een grafiek, enz.
   }
 
-  console.log(proteinHistory);
-  console.log(creatineHistory);
-
-  // Test data voor de proteïne-, creatine- en watergrafieken
+  //  data voor de proteïne-, creatine- en watergrafieken
   const proteinData = proteinHistory;
   const creatineData = creatineHistory;
 
@@ -145,7 +142,7 @@ const showShakeChart = function (jsonObject) {
     ]
   };
 
- // Configuratieopties voor de shakegrafiek
+  // Configuratieopties voor de shakegrafiek
   const shakeChartConfig = {
     type: 'line',
     data: shakeChartData,
@@ -281,6 +278,17 @@ const listenToSocket = function () {
       }
     });
   }
+  socketio.on('B2F_userid', function (object) {
+    console.log('login userid');
+    localStorage.setItem('userid', userid);
+    document.querySelector('#sign').innerHTML = 'Sign out'
+    // window.location.href = 'overview.html';
+  });
+  socketio.on('B2F_loginerror', function (object) {
+    console.log('login error');
+    error.innerHTML = object.error;
+
+  });
 };
 
 const listenToClickRegister = function () {
@@ -330,8 +338,26 @@ const listenToClickLogin = function () {
       Wachtwoord: password
     };
     handleData("http://192.168.168.169:5000/api/v1/inloggen/", callbackLogin, null, 'POST', JSON.stringify(jsonobject));
+    window.location.href = 'overview.html';
   });
 };
+
+const logout = function () {
+  const button = document.querySelector('#sign');
+  button.addEventListener('click', function () {
+    if (userid) {
+      // Als de gebruiker is ingelogd, uitloggen en naar de inlogpagina navigeren
+      console.log('uitloggen');
+      localStorage.removeItem('userid');
+      userid = null;
+      window.location.href = 'login.html';
+      sign.innerHTML = 'Sign in';
+    } else {
+      // Als de gebruiker niet is ingelogd, gewoon naar de inlogpagina navigeren
+      window.location.href = 'login.html';
+    }
+  });
+}
 // #endregion
 
 // #region ***  Init / DOMContentLoaded                  ***********
@@ -347,13 +373,19 @@ const init = function () {
   statusElement = document.querySelector('#status');
   bottleElement = document.querySelectorAll('.c-svg__bottle');
   error = document.querySelector('.c-error');
+  sign = document.querySelector('#sign')
+  userid = localStorage.getItem('userid');
+  // Controleer of de gebruiker is ingelogd
+  if (userid) {
+    sign.innerHTML = 'Sign out';
+  }
   listenToUI();
   listenToSocket();
+  logout();
   if (overview) {
-    showWaterlevelTest();
-    showProteinweightTest();
-    showCreatineweightTest();
-    // showShakeGraphTest();
+    showWaterlevel();
+    showProteinweight();
+    showCreatineweight();
     getShakeShart();
 
     // getHistoriek();

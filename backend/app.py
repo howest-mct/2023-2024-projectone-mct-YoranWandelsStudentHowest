@@ -196,7 +196,7 @@ class rotaryEncoder:
                 self.__counter -= 1
             # print(self.counter)
             self.update_lcd()
-            print(self.measurements_powder)
+            # print(self.measurements_powder)
         self.clkLastState = clk_val
 
     def update_lcd(self):
@@ -242,7 +242,7 @@ class rotaryEncoder:
             self.switchclick = 0
         if self.switchclick != self.lastswitchclick:
             if self.clickc1 == True:
-                print(self.powder)
+                # print(self.powder)
                 self.clickc1 = False
                 self.clickc2 = True
                 self.lcd.clear_display()
@@ -268,9 +268,9 @@ class rotaryEncoder:
                 self.lcd.send_instruction(0b11000000) #new line
                 self.lcd.write_message('Proteine')
                 self.clickc1 = True
-            print(self.counter)
+            # print(self.counter)
         self.lastswitchclick = self.switchclick
-        print(self.switchclick)
+        # print(self.switchclick)
 
 # API ENDPOINTS
 
@@ -318,11 +318,12 @@ def login_gebruiker():
         if user and bcrypt.checkpw(gegevens['Wachtwoord'].encode('utf-8'), user['Wachtwoord'].encode('utf-8')):
             global userid
             userid = user['GebruikerID']
-            socketio.emit()
+            socketio.emit('B2F_userid', {'userid': userid})
             return jsonify(gebruikerid=userid), 200
         else:
             print('foute gegevens')
-            return jsonify(error='Invalid credentials'), 401
+            socketio.emit('B2F_loginerror', {'error': 'Incorrect email or password. Please try again.'})
+            return jsonify(error='Invalid credentials'), 404
 
 # SOCKET IO
 
@@ -333,8 +334,7 @@ def initial_connection():
 
 
 def send_data_watersensor():
-    idwatersensor = (DataRepository.get_id_sensor(
-        'Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
+    idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
     current_datetime = datetime.datetime.now()
     waterdist = round(watersensor.distance(), 2)
     print(f"Water distance: {waterdist} at {current_datetime}")

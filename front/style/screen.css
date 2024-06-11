@@ -1519,3 +1519,6 @@ input {
     flex-basis: 100% !important;
   }
 }
+#sign:hover {
+  cursor: pointer;
+}
