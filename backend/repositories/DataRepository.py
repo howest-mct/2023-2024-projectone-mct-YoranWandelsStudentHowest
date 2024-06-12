@@ -1,4 +1,6 @@
 from .Database import Database
+import datetime
+
 
 
 class DataRepository:
@@ -58,4 +60,15 @@ class DataRepository:
         params = [email]
         return Database.get_one_row(sql, params)
 
+    def get_user_shake_data(userid):
+        # Bepaal de startdatum van de huidige week
+        today = datetime.datetime.today()
+        start_of_week = today - datetime.timedelta(days=today.weekday())
+        start_of_week_str = start_of_week.strftime('%Y-%m-%d 00:00:00')
+        
+        # SQL-query om data van de huidige week te selecteren
+        sql = "SELECT * FROM musclefuel_dispenser.historiek WHERE Commentaar = 'nieuwe shake aangemaakt' AND GebruikerID = %s AND Actiedatum >= %s"
+        params = [userid, start_of_week_str]
+        
+        return Database.get_rows(sql, params)
 

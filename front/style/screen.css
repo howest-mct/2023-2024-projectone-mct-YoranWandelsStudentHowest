@@ -448,7 +448,7 @@ input {
 }
 @media (max-width: 36.0625em) {
   .c-header {
-    justify-content: center;
+    justify-content: space-between;
   }
 }
 
@@ -479,16 +479,16 @@ input {
   background-color: #228be6;
   border-radius: 2.2857142857rem;
 }
-@media (max-width: 48.0625em) {
-  .c-header__logo {
-    display: none;
-  }
-}
 
 .c-header__name {
   margin: 0;
   color: white;
   font-weight: 700;
+}
+@media (max-width: 48.0625em) {
+  .c-header__name {
+    display: none;
+  }
 }
 
 /*
@@ -617,6 +617,12 @@ input {
   display: flex;
   justify-content: center;
   padding: 3.4285714286rem 1.7142857143rem;
+}
+
+@media (max-width: 36.0625em) {
+  .c-chart__form--desktop {
+    display: none;
+  }
 }
 
 @media (max-width: 75.0625em) {
@@ -1518,4 +1524,7 @@ input {
   .u-6-of-6-bp5 {
     flex-basis: 100% !important;
   }
+}
+#sign:hover {
+  cursor: pointer;
 }
