@@ -353,7 +353,7 @@ def logout_gebruiker():
 @app.route(endpoint + '/createshake/', methods=["POST"])
 def create_shake_front():
     if request.method == 'POST':
-        global userid, stop_threads
+        global userid, stop_threads, proteinweight, creatineweight
         stop_threads = True
         gegevens = DataRepository.json_or_formdata(request)
         powder = str(gegevens['Powder'])
@@ -361,8 +361,9 @@ def create_shake_front():
         waterAmount = int(gegevens['WaterAmount'])
         # Bereken de tijd die de waterpomp aan moet staan
         # 100 ml kost 7 seconden, dus 1 ml kost 7/100 seconden
+        print(powder, powderAmount, proteinweight)
         if bottlestatus:
-            if (powder == 'proteine' and powderAmount <= proteinweight) or (powder == 'creatine' and powderAmount <= creatineweight):
+            if (powder == 'Protein' and powderAmount <= proteinweight) or (powder == 'Creatine' and powderAmount <= creatineweight):
                 tijd_per_ml = 7 / 100.0
                 benodigde_tijd = waterAmount * tijd_per_ml
                 
@@ -403,9 +404,9 @@ def create_shake_front():
                 socketio.emit('B2F_shake', {'shakeamount': powderAmount})
                 return jsonify(status='succes'), 200
             else:
-                return jsonify(status='Not enough powder left'), 404
+                return jsonify(status='Not enough powder left'), 200
         else:
-            return jsonify(status='No bottle present'), 404
+            return jsonify(status='No bottle present'), 200
 
 
 
@@ -495,8 +496,10 @@ def start_thread():
     return thread
 
 
-def my_callback_one(pin):
-    print('button click')
+def my_callback_one(channel):
+    print('Button pressed! Shutting down...')
+    time.sleep(1)  # Add a short delay to ensure the message is printed before shutting down
+    os.system("sudo shutdown -h now")
 
 
 GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_UP)

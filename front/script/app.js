@@ -4,7 +4,7 @@ const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
 
 // #region ***  DOM references                           ***********
-let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign;
+let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign, shakestatus;
 const maxWater = 810;
 const maxProtein = 164;
 const maxCreatine = 161;
@@ -245,6 +245,13 @@ const callbackLogout = function () {
 
 const callbackCreateshake = function (data) {
   console.log(data);
+  const status = data.status
+  if (status != 'succes') {
+    error.innerHTML = status
+  } else {
+    error.innerHTML = ''
+    shakestatus.innerHTML = ''
+  }
 };
 // #endregion
 
@@ -422,6 +429,7 @@ const init = function () {
   bottleElement = document.querySelectorAll('.c-svg__bottle');
   error = document.querySelector('.c-error');
   sign = document.querySelector('#sign');
+  shakestatus = document.querySelector('.c-shake--status')
   userid = localStorage.getItem('userid');
   // Controleer of de gebruiker is ingelogd
   if (userid) {
