@@ -242,6 +242,10 @@ const callbackLogout = function () {
   userid = null;
   window.location.href = 'login.html';
 }
+
+const callbackCreateshake = function () {
+  console.log('making shake')
+}
 // #endregion
 
 // #region ***  Data Access - get___                     ***********
@@ -358,7 +362,7 @@ const listenToClickLogin = function () {
   });
 };
 
-const logout = function () {
+const listenToClickLogout = function () {
   const button = document.querySelector('#sign');
   button.addEventListener('click', function () {
     if (userid) {
@@ -368,6 +372,30 @@ const logout = function () {
       // Als de gebruiker niet is ingelogd, gewoon naar de inlogpagina navigeren
       window.location.href = 'login.html'
     }
+  });
+}
+
+const listenToClickCreateShake = function () {
+  const button = document.querySelector('.js-shake');
+  button.addEventListener('click', function () {
+    const radioButtons = document.getElementsByName('shake-type');
+    const inputAmount = document.getElementById('amount')
+    const inputWateramount = document.getElementById('water-amount')
+    let powder;
+    radioButtons.forEach(button => {
+      if (button.checked) {
+        powder = button.value;
+      }
+    });
+    const powderAmount = inputAmount.value
+    const waterAmount = inputWateramount.value
+    const jsonobject = {
+      Powder: powder,
+      PowderAmount: powderAmount,
+      waterAmount: waterAmount
+    };
+    console.log(jsonobject)
+    handleData('http://192.168.168.169:5000/api/v1/createshake/', callbackCreateshake, null, 'POST', JSON.stringify(jsonobject));
   });
 }
 // #endregion
@@ -393,7 +421,7 @@ const init = function () {
   }
   listenToUI();
   listenToSocket();
-  logout();
+  listenToClickLogout();
   if (overview) {
     showWaterlevel();
     showProteinweight();
@@ -410,6 +438,9 @@ const init = function () {
   }
   if (login) {
     listenToClickLogin();
+  }
+  if (shake) {
+    listenToClickCreateShake();
   }
 };
 
