@@ -144,18 +144,20 @@ class rotaryEncoder:
         self.__counter = value
     
     def send_data_shake(self):
+        global userid
+        print(userid)
         if self.powder == 'proteine':
             idpowdermotor = (DataRepository.get_id_sensor('Stappenmotor om de auger te laten draaien van de proteine'))['DeviceID']
         else:
             idpowdermotor = (DataRepository.get_id_sensor('Stappenmotor om de auger te laten draaien van de creatine'))['DeviceID']
         current_datetime = datetime.datetime.now()
         print(f"new shake {self.powder}: {self.powderamount} at {current_datetime}")
-        # create_historiek = DataRepository.create_historiek(idpowdermotor, userid, current_datetime, self.powderamount, 'nieuwe shake aangemaakt')
-        # if create_historiek:
-        #     print('New history entry created successfully.')
+        create_historiek = DataRepository.create_historiek(idpowdermotor, userid, current_datetime, self.powderamount, 'nieuwe shake aangemaakt')
+        if create_historiek:
+            print('New history entry created successfully.')
         #waterpump
-        idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
-        create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
+        # idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
+        # create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
         # if create_historiek:
         #     print('New history entry created successfully.')
         socketio.emit('B2F_shake', {'shakeamount': self.powderamount})
@@ -318,12 +320,19 @@ def login_gebruiker():
         if user and bcrypt.checkpw(gegevens['Wachtwoord'].encode('utf-8'), user['Wachtwoord'].encode('utf-8')):
             global userid
             userid = user['GebruikerID']
-            socketio.emit('B2F_userid', {'userid': userid})
+            print(userid)
             return jsonify(gebruikerid=userid), 200
         else:
             print('foute gegevens')
-            socketio.emit('B2F_loginerror', {'error': 'Incorrect email or password. Please try again.'})
-            return jsonify(error='Invalid credentials'), 404
+            return jsonify(error='Incorrect email or password. Please try again.'), 200
+        
+@app.route(endpoint + '/uitloggen/', methods=["POST"])
+def logout_gebruiker():
+    if request.method == 'POST':
+        global userid
+        userid = 1
+        return jsonify(logout='succes'), 200
+
 
 # SOCKET IO
 
@@ -334,6 +343,8 @@ def initial_connection():
 
 
 def send_data_watersensor():
+    global userid
+    print(userid)
     idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
     current_datetime = datetime.datetime.now()
     waterdist = round(watersensor.distance(), 2)
@@ -345,8 +356,8 @@ def send_data_watersensor():
 
 
 def send_data_bottlesensor():
-    idbottlesensor = (DataRepository.get_id_sensor(
-        'Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
+    global userid
+    idbottlesensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
     current_datetime = datetime.datetime.now()
     bottledist = round(bottlesensor.distance(), 2)
     bottlestatus = 1 if bottledist < 100 else 0
@@ -358,6 +369,7 @@ def send_data_bottlesensor():
 
 
 def send_data_proteinweight():
+    global userid
     try:
         idproteinweight = (DataRepository.get_id_sensor(
             'Gewicht meten van de proteine'))['DeviceID']
@@ -373,13 +385,14 @@ def send_data_proteinweight():
 
 
 def send_data_creatineweight():
+    global userid
     try:
         idcreateineweight = (DataRepository.get_id_sensor(
             'Gewicht meten van de creatine'))['DeviceID']
         current_datetime = datetime.datetime.now()
         creatineweight = hx_creatine.get_weight_mean(20)
         print(f"Creatine Weight: {creatineweight} at {current_datetime}")
-        create_historiek = DataRepository.create_historiek(idcreateineweight, userid, current_datetime, creatineweight, 'creatine weight')
+        # create_historiek = DataRepository.create_historiek(idcreateineweight, userid, current_datetime, creatineweight, 'creatine weight')
         # if create_historiek:
         #     print('New history entry created successfully.')
         socketio.emit('B2F_creatineweight', {'weight': creatineweight})

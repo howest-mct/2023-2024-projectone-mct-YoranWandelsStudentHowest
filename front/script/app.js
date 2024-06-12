@@ -176,6 +176,14 @@ const showShakeChart = function (jsonObject) {
         }
       },
       plugins: {
+        title: {
+          display: true,
+          text: 'Weekelijkse inname', // Voeg de titel hier toe
+          font: {
+            size: 18, // Grootte van het lettertype van de titel
+            weight: 'bold' // Vetgedrukt lettertype van de titel
+          }
+        },
         legend: {
           display: true,
           position: 'top',
@@ -206,15 +214,34 @@ const showShakeChart = function (jsonObject) {
   const shakeChart = new Chart(document.getElementById('shakeChart'), shakeChartConfig);
 };
 
+
 // #endregion
 
 // #region ***  Callback-No Visualisation - callback___  ***********
 const callbackAddGebruiker = function () {
   console.log('nieuwe gebruiker toegevoegt');
 };
-const callbackLogin = function () {
-  console.log('login');
+const callbackLogin = function (data) {
+  console.log('test');
+  if (data && data.gebruikerid) {
+    console.log('Inloggen succesvol');
+    // Sla de gebruikers-ID op in localStorage
+    localStorage.setItem('userid', data.gebruikerid);
+    // Doorsturen naar de overview pagina
+    window.location.href = 'overview.html';
+  } else if (data && data.error) {
+    error.innerHTML = data.error
+    // Toon een foutmelding aan de gebruiker
+    // alert(data.error);
+  }
 };
+
+const callbackLogout = function () {
+  console.log('logging out')
+  localStorage.removeItem('userid');
+  userid = null;
+  window.location.href = 'login.html';
+}
 // #endregion
 
 // #region ***  Data Access - get___                     ***********
@@ -224,6 +251,7 @@ const callbackLogin = function () {
 // };
 
 const getShakeShart = function () {
+  console.log(userid)
   handleData("http://192.168.168.169:5000/api/v1/shakehist/", showShakeChart);
 };
 // #endregion
@@ -278,17 +306,6 @@ const listenToSocket = function () {
       }
     });
   }
-  socketio.on('B2F_userid', function (object) {
-    console.log('login userid');
-    localStorage.setItem('userid', userid);
-    document.querySelector('#sign').innerHTML = 'Sign out'
-    // window.location.href = 'overview.html';
-  });
-  socketio.on('B2F_loginerror', function (object) {
-    console.log('login error');
-    error.innerHTML = object.error;
-
-  });
 };
 
 const listenToClickRegister = function () {
@@ -332,13 +349,12 @@ const listenToClickLogin = function () {
   button.addEventListener('click', function () {
     const email = document.querySelector('#email').value;
     const password = document.querySelector('#password').value;
-    console.log(email, password);
     const jsonobject = {
       Email: email,
       Wachtwoord: password
     };
     handleData("http://192.168.168.169:5000/api/v1/inloggen/", callbackLogin, null, 'POST', JSON.stringify(jsonobject));
-    window.location.href = 'overview.html';
+    // window.location.href = 'overview.html';
   });
 };
 
@@ -347,14 +363,10 @@ const logout = function () {
   button.addEventListener('click', function () {
     if (userid) {
       // Als de gebruiker is ingelogd, uitloggen en naar de inlogpagina navigeren
-      console.log('uitloggen');
-      localStorage.removeItem('userid');
-      userid = null;
-      window.location.href = 'login.html';
-      sign.innerHTML = 'Sign in';
+      handleData(`http://192.168.168.169:5000/api/v1/uitloggen/`, callbackLogout, null, 'POST', null);
     } else {
       // Als de gebruiker niet is ingelogd, gewoon naar de inlogpagina navigeren
-      window.location.href = 'login.html';
+      window.location.href = 'login.html'
     }
   });
 }

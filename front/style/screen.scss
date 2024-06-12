@@ -771,6 +771,12 @@ input {
   padding: $space-xl $space-m ;
 }
 
+.c-chart__form--desktop {
+  @include mq(bp1, max) {
+    display: none;
+  }
+}
+
 @include mq(bp4, max) {
   .c-main-container {
     flex-direction: column;
