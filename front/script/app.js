@@ -230,22 +230,22 @@ const callbackLogin = function (data) {
     // Doorsturen naar de overview pagina
     window.location.href = 'overview.html';
   } else if (data && data.error) {
-    error.innerHTML = data.error
+    error.innerHTML = data.error;
     // Toon een foutmelding aan de gebruiker
     // alert(data.error);
   }
 };
 
 const callbackLogout = function () {
-  console.log('logging out')
+  console.log('logging out');
   localStorage.removeItem('userid');
   userid = null;
   window.location.href = 'login.html';
-}
+};
 
 const callbackCreateshake = function () {
-  console.log('making shake')
-}
+  console.log('making shake');
+};
 // #endregion
 
 // #region ***  Data Access - get___                     ***********
@@ -255,7 +255,7 @@ const callbackCreateshake = function () {
 // };
 
 const getShakeShart = function () {
-  console.log(userid)
+  console.log(userid);
   handleData("http://192.168.168.169:5000/api/v1/shakehist/", showShakeChart);
 };
 // #endregion
@@ -370,34 +370,42 @@ const listenToClickLogout = function () {
       handleData(`http://192.168.168.169:5000/api/v1/uitloggen/`, callbackLogout, null, 'POST', null);
     } else {
       // Als de gebruiker niet is ingelogd, gewoon naar de inlogpagina navigeren
-      window.location.href = 'login.html'
+      window.location.href = 'login.html';
     }
   });
-}
+};
 
 const listenToClickCreateShake = function () {
   const button = document.querySelector('.js-shake');
   button.addEventListener('click', function () {
     const radioButtons = document.getElementsByName('shake-type');
-    const inputAmount = document.getElementById('amount')
-    const inputWateramount = document.getElementById('water-amount')
+    const inputAmount = document.getElementById('amount');
+    const inputWateramount = document.getElementById('water-amount');
     let powder;
+
     radioButtons.forEach(button => {
       if (button.checked) {
         powder = button.value;
       }
     });
-    const powderAmount = inputAmount.value
-    const waterAmount = inputWateramount.value
-    const jsonobject = {
-      Powder: powder,
-      PowderAmount: powderAmount,
-      waterAmount: waterAmount
-    };
-    console.log(jsonobject)
-    handleData('http://192.168.168.169:5000/api/v1/createshake/', callbackCreateshake, null, 'POST', JSON.stringify(jsonobject));
+
+    const powderAmount = inputAmount.value;
+    const waterAmount = inputWateramount.value;
+
+    if (powderAmount && waterAmount) {
+      const jsonobject = {
+        Powder: powder,
+        PowderAmount: powderAmount,
+        WaterAmount: waterAmount
+      };
+      console.log(jsonobject);
+      handleData('http://192.168.168.169:5000/api/v1/createshake/', callbackCreateshake, null, 'POST', JSON.stringify(jsonobject));
+    } else {
+      error.innerHTML = 'Please set both powder amount and water amount.';
+    }
   });
-}
+};
+
 // #endregion
 
 // #region ***  Init / DOMContentLoaded                  ***********
@@ -413,7 +421,7 @@ const init = function () {
   statusElement = document.querySelector('#status');
   bottleElement = document.querySelectorAll('.c-svg__bottle');
   error = document.querySelector('.c-error');
-  sign = document.querySelector('#sign')
+  sign = document.querySelector('#sign');
   userid = localStorage.getItem('userid');
   // Controleer of de gebruiker is ingelogd
   if (userid) {
