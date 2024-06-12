@@ -71,6 +71,11 @@ RotaryCounter = 0
 userid = 1
 #bottlesensor
 bottlestatus = 0
+#weight
+proteinweight = 0
+caseproteinweight = 164
+creatineweight = 0
+casecreatineweight = 161
 
 class rotaryEncoder:
     def __init__(self, parswitch, pardt, parclk, parlcd, parwaterpump, parproteinmotor, parcreatinemotor) -> None:
@@ -165,29 +170,39 @@ class rotaryEncoder:
         socketio.emit('B2F_shake', {'shakeamount': self.powderamount})
 
     def create_shake(self, powder='proteine', powderamount=1, wateramount=100):
-            # Bereken de tijd die de waterpomp aan moet staan
-            # 100 ml kost 7 seconden, dus 1 ml kost 7/100 seconden
-            tijd_per_ml = 7 / 100.0
-            benodigde_tijd = wateramount * tijd_per_ml
-            
-            # Bereken het aantal stappen voor de poederdispenser
-            stappen_per_gram = 19505 
-            benodigde_stappen = stappen_per_gram * powderamount
-            
-            # Start de poederdispenser voor het benodigde aantal stappen
-            if self.powder == 'proteine':
-                self.proteinmotor.draaien_links(benodigde_stappen)
-            else:
-                self.creatinemotor.draaien_rechts(benodigde_stappen)
+            if bottlestatus:
+                if (powder == 'proteine' and powderamount <= proteinweight) or (powder == 'creatine' and powderamount <= creatineweight):
+                    # Bereken de tijd die de waterpomp aan moet staan
+                    # 100 ml kost 7 seconden, dus 1 ml kost 7/100 seconden
+                    tijd_per_ml = 7 / 100.0
+                    benodigde_tijd = wateramount * tijd_per_ml
+                    
+                    # Bereken het aantal stappen voor de poederdispenser
+                    stappen_per_gram = 19505 
+                    benodigde_stappen = stappen_per_gram * powderamount
+                    
+                    # Start de poederdispenser voor het benodigde aantal stappen
+                    if self.powder == 'proteine':
+                        self.proteinmotor.draaien_links(benodigde_stappen)
+                    else:
+                        self.creatinemotor.draaien_rechts(benodigde_stappen)
 
-            # Start de waterpomp
-            self.waterpump.turn_on()
-            # Wacht voor de berekende tijd om water te doseren
-            time.sleep(benodigde_tijd)
-            # Stop de waterpomp
-            self.waterpump.turn_off()
-            print('shake klaar')
-            self.send_data_shake()
+                    # Start de waterpomp
+                    self.waterpump.turn_on()
+                    # Wacht voor de berekende tijd om water te doseren
+                    time.sleep(benodigde_tijd)
+                    # Stop de waterpomp
+                    self.waterpump.turn_off()
+                    print('shake klaar')
+                    self.send_data_shake()
+                else:
+                    lcd.clear_display()
+                    lcd.write_message('Not enough powder left')
+                    time.sleep(1)
+            else:
+                lcd.clear_display()
+                lcd.write_message('No bottle present')
+                time.sleep(1)
 
     def rotation_callback(self, pin):
         dt_val = GPIO.input(self.dt)
@@ -227,15 +242,15 @@ class rotaryEncoder:
             if self.counter == 0:
                 self.lcd.clear_display()
                 ips = check_output(['hostname', '--all-ip-addresses']).decode() #decode: bytes -> string
-                self.lcd.write_message(ips[:16])
-                self.lcd.send_instruction(0b11000000) #new line
                 self.lcd.write_message(ips[16:29])
             elif self.counter == 1:
                 self.lcd.clear_display()
                 self.lcd.write_message('Maak een shake')
             else:
                 self.lcd.clear_display()
-                self.lcd.write_message('3')
+                self.lcd.write_message(f'Protein: {proteinweight}')
+                self.lcd.send_instruction(0b11000000) #new line
+                self.lcd.write_message(f'Creatine: {creatineweight}')
 
 
 
@@ -341,53 +356,56 @@ def create_shake_front():
         global userid, stop_threads
         stop_threads = True
         gegevens = DataRepository.json_or_formdata(request)
-        print(gegevens['Powder'])
-        print(gegevens['PowderAmount'])
-        print(gegevens['WaterAmount'])
         powder = str(gegevens['Powder'])
         powderAmount = int(gegevens['PowderAmount'])
         waterAmount = int(gegevens['WaterAmount'])
         # Bereken de tijd die de waterpomp aan moet staan
         # 100 ml kost 7 seconden, dus 1 ml kost 7/100 seconden
-        tijd_per_ml = 7 / 100.0
-        benodigde_tijd = waterAmount * tijd_per_ml
-        
-        # Bereken het aantal stappen voor de poederdispenser
-        stappen_per_gram = 19505 
-        benodigde_stappen = stappen_per_gram * powderAmount
-        
-        # Start de poederdispenser voor het benodigde aantal stappen
-        if powder == 'Protein':
-            Proteinmotor.draaien_links(benodigde_stappen)
-        else:
-            Creatinemotor.draaien_rechts(benodigde_stappen)
+        if bottlestatus:
+            if (powder == 'proteine' and powderAmount <= proteinweight) or (powder == 'creatine' and powderAmount <= creatineweight):
+                tijd_per_ml = 7 / 100.0
+                benodigde_tijd = waterAmount * tijd_per_ml
+                
+                # Bereken het aantal stappen voor de poederdispenser
+                stappen_per_gram = 19505 
+                benodigde_stappen = stappen_per_gram * powderAmount
+                
+                # Start de poederdispenser voor het benodigde aantal stappen
+                if powder == 'Protein':
+                    Proteinmotor.draaien_links(benodigde_stappen)
+                else:
+                    Creatinemotor.draaien_rechts(benodigde_stappen)
 
-        # Start de waterpomp
-        waterpump.turn_on()
-        # Wacht voor de berekende tijd om water te doseren
-        time.sleep(benodigde_tijd)
-        # Stop de waterpomp
-        waterpump.turn_off()
-        print('shake klaar')
-        stop_threads = False
-        # Restart the thread
-        start_thread()
-        if powder == 'protein':
-            idpowdermotor = (DataRepository.get_id_sensor('Stappenmotor om de auger te laten draaien van de proteine'))['DeviceID']
+                # Start de waterpomp
+                waterpump.turn_on()
+                # Wacht voor de berekende tijd om water te doseren
+                time.sleep(benodigde_tijd)
+                # Stop de waterpomp
+                waterpump.turn_off()
+                print('shake klaar')
+                stop_threads = False
+                # Restart the thread
+                start_thread()
+                if powder == 'protein':
+                    idpowdermotor = (DataRepository.get_id_sensor('Stappenmotor om de auger te laten draaien van de proteine'))['DeviceID']
+                else:
+                    idpowdermotor = (DataRepository.get_id_sensor('Stappenmotor om de auger te laten draaien van de creatine'))['DeviceID']
+                current_datetime = datetime.datetime.now()
+                print(f"new shake {powder}: {powderAmount} at {current_datetime}")
+                create_historiek = DataRepository.create_historiek(idpowdermotor, userid, current_datetime, powderAmount, 'nieuwe shake aangemaakt')
+                if create_historiek:
+                    print('New history entry created successfully.')
+                #waterpump
+                # idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
+                # create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
+                # if create_historiek:
+                #     print('New history entry created successfully.')
+                socketio.emit('B2F_shake', {'shakeamount': powderAmount})
+                return jsonify(status='succes'), 200
+            else:
+                return jsonify(status='Not enough powder left'), 404
         else:
-            idpowdermotor = (DataRepository.get_id_sensor('Stappenmotor om de auger te laten draaien van de creatine'))['DeviceID']
-        current_datetime = datetime.datetime.now()
-        print(f"new shake {powder}: {powderAmount} at {current_datetime}")
-        create_historiek = DataRepository.create_historiek(idpowdermotor, userid, current_datetime, powderAmount, 'nieuwe shake aangemaakt')
-        if create_historiek:
-            print('New history entry created successfully.')
-        #waterpump
-        # idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
-        # create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
-        # if create_historiek:
-        #     print('New history entry created successfully.')
-        socketio.emit('B2F_shake', {'shakeamount': powderAmount})
-        return jsonify(status='succes'), 200
+            return jsonify(status='No bottle present'), 404
 
 
 
@@ -426,12 +444,12 @@ def send_data_bottlesensor():
 
 
 def send_data_proteinweight():
-    global userid
+    global userid, proteinweight
     try:
         idproteinweight = (DataRepository.get_id_sensor(
             'Gewicht meten van de proteine'))['DeviceID']
         current_datetime = datetime.datetime.now()
-        proteinweight = hx_protein.get_weight_mean(20)
+        proteinweight = round(hx_protein.get_weight_mean(20) - caseproteinweight,2)
         print(f"Protein Weight: {proteinweight} at {current_datetime}")
         # create_historiek = DataRepository.create_historiek(idproteinweight, userid, current_datetime, proteinweight, 'protein weight')
         # if create_historiek:
@@ -442,12 +460,12 @@ def send_data_proteinweight():
 
 
 def send_data_creatineweight():
-    global userid
+    global userid, creatineweight
     try:
         idcreateineweight = (DataRepository.get_id_sensor(
             'Gewicht meten van de creatine'))['DeviceID']
         current_datetime = datetime.datetime.now()
-        creatineweight = hx_creatine.get_weight_mean(20)
+        creatineweight = round(hx_creatine.get_weight_mean(20) - casecreatineweight,2)
         print(f"Creatine Weight: {creatineweight} at {current_datetime}")
         # create_historiek = DataRepository.create_historiek(idcreateineweight, userid, current_datetime, creatineweight, 'creatine weight')
         # if create_historiek:
@@ -497,6 +515,9 @@ if __name__ == '__main__':
 
         pcf = PCF(sda, scl, adres)
         lcd = LCD(rs, enable, pcf)
+        lcd.clear_display()
+        ips = check_output(['hostname', '--all-ip-addresses']).decode() #decode: bytes -> string
+        lcd.write_message(ips[16:29])
         rotary = rotaryEncoder(rot_switch, rot_dt, rot_clk, lcd, waterpump, Proteinmotor, Creatinemotor)
 
         hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)

@@ -243,8 +243,8 @@ const callbackLogout = function () {
   window.location.href = 'login.html';
 };
 
-const callbackCreateshake = function () {
-  console.log('making shake');
+const callbackCreateshake = function (data) {
+  console.log(data);
 };
 // #endregion
 
