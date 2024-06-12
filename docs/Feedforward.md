@@ -123,3 +123,16 @@ Dit is de feedback op mijn vragen.
 
     - feedback 1:
         - alles was in orde
+
+## MVP3 (Datum: 6/12/2024)
+
+Lector: Geert, Claudia, Dieter
+
+Dit is de feedback
+
+    - feedback:
+        - grafiek cumulatief tonen en tonen hoeveel shakes je per week gedronken hebt
+        - trechter voor de poeder eruit te doen
+        - realistiche kleuren voor de charts
+        - logo van muscluefuel dispenser laten staan bij kleinere schermen
+    
