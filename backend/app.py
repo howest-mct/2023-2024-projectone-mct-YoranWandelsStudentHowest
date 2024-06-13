@@ -421,14 +421,14 @@ def initial_connection():
 def send_data_watersensor():
     global userid
     # print(userid)
-    # idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
-    # current_datetime = datetime.datetime.now()
-    # waterdist = round(watersensor.distance(), 2)
-    # print(f"Water distance: {waterdist} at {current_datetime}")
+    idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
+    current_datetime = datetime.datetime.now()
+    waterdist = round(watersensor.distance(), 2)
+    print(f"Water distance: {waterdist} at {current_datetime}")
     # create_historiek = DataRepository.create_historiek(idwatersensor, userid, current_datetime, waterdist, 'water afstand sensor')
     # if create_historiek:
     #     print('New history entry created successfully.')
-    # socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
+    socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
 
 def send_data_bottlesensor():

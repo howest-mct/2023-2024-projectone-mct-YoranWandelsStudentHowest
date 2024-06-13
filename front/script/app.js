@@ -172,7 +172,7 @@ const showShakeChart = function (jsonObject) {
             }
           },
           beginAtZero: true,
-          max: 10 // Maximale waarde van de y-as
+          max: 50 // Maximale waarde van de y-as
         }
       },
       plugins: {
@@ -280,8 +280,8 @@ const listenToSocket = function () {
       console.log('new waterlevel');
       const remainingWater = object.waterlevel; // dynamically fetched
 
-      waterChart.data.datasets[0].data[0] = remainingWater;
-      waterChart.data.datasets[0].data[1] = maxWater - remainingWater;
+      waterChart.data.datasets[0].data[0] = Math.abs(remainingWater - maxWater);
+      waterChart.data.datasets[0].data[1] = remainingWater
       waterChart.update();
     });
     socketio.on('B2F_proteinweight', function (object) {
@@ -354,6 +354,7 @@ const listenToClickRegister = function () {
           document.querySelector('#password').value = '';
           document.querySelector("#confirm-password").value = '';
         }, null, 'POST', JSON.stringify(jsonobject));
+        window.location.href='login.html'
       } else {
         error.innerHTML = 'Passwords not equal';
       }
