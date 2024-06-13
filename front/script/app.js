@@ -4,7 +4,7 @@ const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
 
 // #region ***  DOM references                           ***********
-let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign, shakestatus;
+let waterChart, proteinChart, creatineChart, shakeChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign, shakestatus;
 const maxWater = 810;
 const maxProtein = 164;
 const maxCreatine = 161;
@@ -178,7 +178,7 @@ const showShakeChart = function (jsonObject) {
       plugins: {
         title: {
           display: true,
-          text: 'Weekelijkse inname', // Voeg de titel hier toe
+          text: 'Wekelijkse inname', // Voeg de titel hier toe
           font: {
             size: 18, // Grootte van het lettertype van de titel
             weight: 'bold' // Vetgedrukt lettertype van de titel
@@ -211,7 +211,7 @@ const showShakeChart = function (jsonObject) {
   };
 
   // Maak de shakegrafiek
-  const shakeChart = new Chart(document.getElementById('shakeChart'), shakeChartConfig);
+  shakeChart = new Chart(document.getElementById('shakeChart'), shakeChartConfig);
 };
 
 
@@ -248,9 +248,10 @@ const callbackCreateshake = function (data) {
   const status = data.status
   if (status != 'succes') {
     error.innerHTML = status
+    shakestatus.innerHTML = ''
   } else {
     error.innerHTML = ''
-    shakestatus.innerHTML = ''
+    shakestatus.innerHTML = 'Shake created'
   }
 };
 // #endregion
@@ -258,12 +259,12 @@ const callbackCreateshake = function (data) {
 // #region ***  Data Access - get___                     ***********
 
 // const getHistoriek = function () {
-//   handleData("http://192.168.168.169:5000/api/v1/historiek/", showHistoriek);
+//   handleData("http://${lanIP}/api/v1/historiek/", showHistoriek);
 // };
 
 const getShakeShart = function () {
   console.log(userid);
-  handleData("http://192.168.168.169:5000/api/v1/shakehist/", showShakeChart);
+  handleData(`http://${lanIP}/api/v1/shakehist/`, showShakeChart);
 };
 // #endregion
 
@@ -287,16 +288,16 @@ const listenToSocket = function () {
       console.log('new proteinstatus');
       const proteinweight = object.weight;
       console.info(proteinweight);
-      proteinChart.data.datasets[0].data[0] = maxProtein - proteinweight;
-      proteinChart.data.datasets[0].data[1] = proteinweight;
+      proteinChart.data.datasets[0].data[0] = proteinweight;
+      proteinChart.data.datasets[0].data[1] = maxProtein - proteinweight;
       proteinChart.update();
     });
     socketio.on('B2F_creatineweight', function (object) {
       console.log('new creatinestatus');
       const creatineweight = object.weight;
       console.info(creatineweight);
-      creatineChart.data.datasets[0].data[0] = maxCreatine - creatineweight;
-      creatineChart.data.datasets[0].data[1] = creatineweight;
+      creatineChart.data.datasets[0].data[0] = creatineweight;
+      creatineChart.data.datasets[0].data[1] = maxCreatine - creatineweight;
       creatineChart.update();
     });
   }
@@ -316,6 +317,14 @@ const listenToSocket = function () {
         });
       }
     });
+    socketio.on('B2F_shake', function (shakeData) {
+      if (shakeData.deviceid == 6) {
+        shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
+      } else if (shakeData.deviceid == 5) {
+        shakeChart.data.datasets[1].data.push(shakeData.shakeamount);
+      }
+      shakeChart.update();
+    })
   }
 };
 
@@ -337,7 +346,7 @@ const listenToClickRegister = function () {
           Wachtwoord: password,
           Email: email
         };
-        handleData("http://192.168.168.169:5000/api/v1/gebruiker/", function () {
+        handleData(`http://${lanIP}/api/v1/gebruiker/`, function () {
           console.log('nieuwe gebruiker toegevoegt');
           error.innerHTML = '';
           document.querySelector('#gebruikersnaam').value = '';
@@ -364,7 +373,7 @@ const listenToClickLogin = function () {
       Email: email,
       Wachtwoord: password
     };
-    handleData("http://192.168.168.169:5000/api/v1/inloggen/", callbackLogin, null, 'POST', JSON.stringify(jsonobject));
+    handleData(`http://${lanIP}/api/v1/inloggen/`, callbackLogin, null, 'POST', JSON.stringify(jsonobject));
     // window.location.href = 'overview.html';
   });
 };
@@ -374,7 +383,7 @@ const listenToClickLogout = function () {
   button.addEventListener('click', function () {
     if (userid) {
       // Als de gebruiker is ingelogd, uitloggen en naar de inlogpagina navigeren
-      handleData(`http://192.168.168.169:5000/api/v1/uitloggen/`, callbackLogout, null, 'POST', null);
+      handleData(`http://${lanIP}/api/v1/uitloggen/`, callbackLogout, null, 'POST', null);
     } else {
       // Als de gebruiker niet is ingelogd, gewoon naar de inlogpagina navigeren
       window.location.href = 'login.html';
@@ -406,7 +415,8 @@ const listenToClickCreateShake = function () {
         WaterAmount: waterAmount
       };
       console.log(jsonobject);
-      handleData('http://192.168.168.169:5000/api/v1/createshake/', callbackCreateshake, null, 'POST', JSON.stringify(jsonobject));
+      handleData(`http://${lanIP}/api/v1/createshake/`, callbackCreateshake, null, 'POST', JSON.stringify(jsonobject));
+      shakestatus.innerHTML = 'Creating shake..'
     } else {
       error.innerHTML = 'Please set both powder amount and water amount.';
     }

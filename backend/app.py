@@ -401,7 +401,7 @@ def create_shake_front():
                 # create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
                 # if create_historiek:
                 #     print('New history entry created successfully.')
-                socketio.emit('B2F_shake', {'shakeamount': powderAmount})
+                socketio.emit('B2F_shake', {'shakeamount': powderAmount, 'deviceid': idpowdermotor})
                 return jsonify(status='succes'), 200
             else:
                 return jsonify(status='Not enough powder left'), 200
@@ -420,15 +420,15 @@ def initial_connection():
 
 def send_data_watersensor():
     global userid
-    print(userid)
-    idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
-    current_datetime = datetime.datetime.now()
-    waterdist = round(watersensor.distance(), 2)
-    print(f"Water distance: {waterdist} at {current_datetime}")
+    # print(userid)
+    # idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
+    # current_datetime = datetime.datetime.now()
+    # waterdist = round(watersensor.distance(), 2)
+    # print(f"Water distance: {waterdist} at {current_datetime}")
     # create_historiek = DataRepository.create_historiek(idwatersensor, userid, current_datetime, waterdist, 'water afstand sensor')
     # if create_historiek:
     #     print('New history entry created successfully.')
-    socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
+    # socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
 
 def send_data_bottlesensor():
@@ -498,8 +498,8 @@ def start_thread():
 
 def my_callback_one(channel):
     print('Button pressed! Shutting down...')
-    time.sleep(1)  # Add a short delay to ensure the message is printed before shutting down
-    os.system("sudo shutdown -h now")
+    # time.sleep(1)  # Add a short delay to ensure the message is printed before shutting down
+    # os.system("sudo shutdown -h now")
 
 
 GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -520,7 +520,7 @@ if __name__ == '__main__':
         lcd = LCD(rs, enable, pcf)
         lcd.clear_display()
         ips = check_output(['hostname', '--all-ip-addresses']).decode() #decode: bytes -> string
-        lcd.write_message(ips[16:29])
+        lcd.write_message(ips[16:30])
         rotary = rotaryEncoder(rot_switch, rot_dt, rot_clk, lcd, waterpump, Proteinmotor, Creatinemotor)
 
         hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
