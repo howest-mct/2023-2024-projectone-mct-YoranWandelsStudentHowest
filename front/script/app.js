@@ -82,17 +82,13 @@ const showCreatineweight = function () {
 
 const showShakeChart = function (jsonObject) {
   console.log(jsonObject);
-
-  // Definieer de arrays om de gegevens op te slaan
   const proteinHistory = [];
   const creatineHistory = [];
   const WaterHistory = [];
 
   for (const shakedata of jsonObject['shake_history']) {
-    // Log elk individueel item voor controle
     // console.log(shakedata);
 
-    // Voeg shakedata toe aan de juiste array op basis van DeviceID
     if (shakedata['DeviceID'] == 5) {
       proteinHistory.push(shakedata['Waarde']);
     }
@@ -103,50 +99,43 @@ const showShakeChart = function (jsonObject) {
       WaterHistory.push(shakedata['Waarde']);
     }
 
-    // Gebruik de gegevens van elk item, bijvoorbeeld:
     const actiedatum = shakedata.Actiedatum;
     const gebruikerID = shakedata.GebruikerID;
-    // Voer hier verdere acties uit met de gegevens, zoals het toevoegen aan een grafiek, enz.
   }
 
-  //  data voor de proteïne-, creatine- en watergrafieken
   const proteinData = proteinHistory;
   const creatineData = creatineHistory;
 
-  // Zorg ervoor dat de gegevensarrays van dezelfde lengte zijn door ze indien nodig aan te vullen met nullen
   const maxLength = Math.max(proteinData.length, creatineData.length);
   const padArray = (arr, length) => [...arr, ...Array(length - arr.length).fill(0)];
 
   const proteinDataPadded = padArray(proteinData, maxLength);
   const creatineDataPadded = padArray(creatineData, maxLength);
 
-  // Maak cumulatieve gegevens voor elke dataset
   const cumulativeData = (data) => data.map((val, index) => data.slice(0, index + 1).reduce((a, b) => a + b, 0));
   const proteinCumulative = cumulativeData(proteinDataPadded);
   const creatineCumulative = cumulativeData(creatineDataPadded);
 
-  // Gegevens voor de shakegrafiek met gecombineerde tooltips
   const shakeChartData = {
     labels: Array.from({ length: maxLength }, (_, i) => (i + 1).toString()),
     datasets: [
       {
         label: 'Protein shakes',
         data: proteinCumulative,
-        borderColor: '#f0ad4e', // Nieuwe randkleur
-        backgroundColor: '#f5deb3', // Nieuwe achtergrondkleur
+        borderColor: '#f0ad4e',
+        backgroundColor: '#f5deb3',
         borderWidth: 1
       },
       {
         label: 'Creatine shakes',
         data: creatineCumulative,
-        borderColor: '#999999', // Nieuwe randkleur
-        backgroundColor: '#e6e6e6', // Nieuwe achtergrondkleur
+        borderColor: '#999999',
+        backgroundColor: '#e6e6e6',
         borderWidth: 1
       }
     ]
   };
 
-  // Configuratieopties voor de shakegrafiek
   const shakeChartConfig = {
     type: 'line',
     data: shakeChartData,
@@ -156,11 +145,11 @@ const showShakeChart = function (jsonObject) {
         x: {
           title: {
             display: true,
-            text: 'Aantal shakes', // Tekst voor de x-as
-            color: '#333', // Kleur van de tekst
+            text: 'Aantal shakes',
+            color: '#333',
             font: {
-              size: 14, // Grootte van het lettertype
-              weight: 'bold' // Vetgedrukt lettertype
+              size: 14,
+              weight: 'bold'
             }
           },
           beginAtZero: true
@@ -168,24 +157,24 @@ const showShakeChart = function (jsonObject) {
         y: {
           title: {
             display: true,
-            text: 'Gram', // Tekst voor de y-as
-            color: '#333', // Kleur van de tekst
+            text: 'Gram',
+            color: '#333',
             font: {
-              size: 14, // Grootte van het lettertype
-              weight: 'bold' // Vetgedrukt lettertype
+              size: 14,
+              weight: 'bold'
             }
           },
           beginAtZero: true,
-          max: 50 // Maximale waarde van de y-as
+          max: 50
         }
       },
       plugins: {
         title: {
           display: true,
-          text: 'Wekelijkse inname', // Voeg de titel hier toe
+          text: 'Weekly intake',
           font: {
-            size: 18, // Grootte van het lettertype van de titel
-            weight: 'bold' // Vetgedrukt lettertype van de titel
+            size: 18,
+            weight: 'bold'
           }
         },
         legend: {
@@ -193,8 +182,8 @@ const showShakeChart = function (jsonObject) {
           position: 'top',
           labels: {
             font: {
-              size: 14, // Grootte van het lettertype van de legende
-              weight: 'bold' // Vetgedrukt lettertype van de legende
+              size: 14,
+              weight: 'bold'
             }
           }
         },
@@ -214,47 +203,40 @@ const showShakeChart = function (jsonObject) {
     }
   };
 
-  // Maak de shakegrafiek
   shakeChart = new Chart(document.getElementById('shakeChart'), shakeChartConfig);
 };
 
 const showWaterShakeChart = function (jsonObject) {
   console.log(jsonObject);
 
-  // Define the array to store the water data
   const WaterHistory = [];
 
   for (const shakedata of jsonObject['shake_history']) {
-    // Add shakedata to the WaterHistory array based on DeviceID
     if (shakedata['DeviceID'] == 8) {
       WaterHistory.push(shakedata['Waarde']);
     }
   }
 
-  // Ensure the water data array is of the same length by padding with zeros if needed
   const maxLength = WaterHistory.length;
   const padArray = (arr, length) => [...arr, ...Array(length - arr.length).fill(0)];
   const waterDataPadded = padArray(WaterHistory, maxLength);
 
-  // Create cumulative data for the water dataset
   const cumulativeData = (data) => data.map((val, index) => data.slice(0, index + 1).reduce((a, b) => a + b, 0));
   const waterCumulative = cumulativeData(waterDataPadded);
 
-  // Data for the water shake chart
   const waterShakeChartData = {
     labels: Array.from({ length: waterDataPadded.length }, (_, i) => (i + 1).toString()),
     datasets: [
       {
         label: 'Water intake',
         data: waterCumulative,
-        borderColor: '#337ab7', // New border color
-        backgroundColor: '#bce8f1', // New background color
+        borderColor: '#337ab7',
+        backgroundColor: '#bce8f1',
         borderWidth: 1
       }
     ]
   };
 
-  // Configuration options for the water shake chart
   const waterShakeChartConfig = {
     type: 'line',
     data: waterShakeChartData,
@@ -264,11 +246,11 @@ const showWaterShakeChart = function (jsonObject) {
         x: {
           title: {
             display: true,
-            text: 'Aantal shakes', // Text for the x-axis
-            color: '#333', // Color of the text
+            text: 'Aantal shakes',
+            color: '#333',
             font: {
-              size: 14, // Font size
-              weight: 'bold' // Bold font
+              size: 14,
+              weight: 'bold'
             }
           },
           beginAtZero: true
@@ -276,15 +258,15 @@ const showWaterShakeChart = function (jsonObject) {
         y: {
           title: {
             display: true,
-            text: 'milliliter', // Text for the y-axis
-            color: '#333', // Color of the text
+            text: 'milliliter',
+            color: '#333',
             font: {
-              size: 14, // Font size
-              weight: 'bold' // Bold font
+              size: 14,
+              weight: 'bold'
             }
           },
           beginAtZero: true,
-          max: 5000 // Maximum value for the y-axis
+          max: 5000
         }
       },
       plugins: {
@@ -293,8 +275,8 @@ const showWaterShakeChart = function (jsonObject) {
           position: 'top',
           labels: {
             font: {
-              size: 14, // Font size for the legend
-              weight: 'bold' // Bold font for the legend
+              size: 14,
+              weight: 'bold'
             }
           }
         },
@@ -314,7 +296,6 @@ const showWaterShakeChart = function (jsonObject) {
     }
   };
 
-  // Create the water shake chart
   waterShakeChart = new Chart(document.getElementById('waterShakeChart'), waterShakeChartConfig);
 };
 
