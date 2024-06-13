@@ -73,9 +73,9 @@ userid = 1
 bottlestatus = 0
 #weight
 proteinweight = 0
-caseproteinweight = 164
+caseproteinweight = 163
 creatineweight = 0
-casecreatineweight = 161
+casecreatineweight = 164
 
 class rotaryEncoder:
     def __init__(self, parswitch, pardt, parclk, parlcd, parwaterpump, parproteinmotor, parcreatinemotor) -> None:
@@ -162,10 +162,11 @@ class rotaryEncoder:
         create_historiek = DataRepository.create_historiek(idpowdermotor, userid, current_datetime, self.powderamount, 'nieuwe shake aangemaakt')
         if create_historiek:
             print('New history entry created successfully.')
-            idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
-            create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
-            if create_historiek:
-                print('New history entry created successfully.')
+        print('waterpomp data')
+        idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
+        create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
+        if create_historiek:
+            print('New history entry created successfully.')
         socketio.emit('B2F_shake', {'shakeamount': self.powderamount})
 
     def create_shake(self, powder='proteine', powderamount=1, wateramount=100):
@@ -248,8 +249,14 @@ class rotaryEncoder:
             else:
                 self.lcd.clear_display()
                 self.lcd.write_message(f'Protein: {proteinweight}')
-                self.lcd.send_instruction(0b11000000) #new line
+                self.lcd.send_instruction(0b11000000) # new line
                 self.lcd.write_message(f'Creatine: {creatineweight}')
+                time.sleep(3)  # Display for 3 seconds
+
+                # Display water
+                self.lcd.clear_display()
+                self.lcd.write_message(f'Water: {water}')
+                time.sleep(3)  # Display for 3 seconds
 
 
 
@@ -360,7 +367,6 @@ def create_shake_front():
         waterAmount = int(gegevens['WaterAmount'])
         # Bereken de tijd die de waterpomp aan moet staan
         # 100 ml kost 7 seconden, dus 1 ml kost 7/100 seconden
-        print(powder, powderAmount, proteinweight)
         if bottlestatus:
             if (powder == 'Protein' and powderAmount <= proteinweight) or (powder == 'Creatine' and powderAmount <= creatineweight):
                 tijd_per_ml = 7 / 100.0
@@ -396,10 +402,10 @@ def create_shake_front():
                 if create_historiek:
                     print('New history entry created successfully.')
                 #waterpump
-                # idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
-                # create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
-                # if create_historiek:
-                #     print('New history entry created successfully.')
+                idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
+                create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, waterAmount, 'nieuwe shake aangemaakt')
+                if create_historiek:
+                    print('New history entry created successfully.')
                 socketio.emit('B2F_shake', {'shakeamount': powderAmount, 'deviceid': idpowdermotor})
                 return jsonify(status='succes'), 200
             else:

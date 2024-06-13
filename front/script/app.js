@@ -349,13 +349,13 @@ const callbackLogout = function () {
 
 const callbackCreateshake = function (data) {
   console.log(data);
-  const status = data.status
+  const status = data.status;
   if (status != 'succes') {
-    error.innerHTML = status
-    shakestatus.innerHTML = ''
+    error.innerHTML = status;
+    shakestatus.innerHTML = '';
   } else {
-    error.innerHTML = ''
-    shakestatus.innerHTML = 'Shake created'
+    error.innerHTML = '';
+    shakestatus.innerHTML = 'Shake created';
   }
 };
 // #endregion
@@ -386,7 +386,7 @@ const listenToSocket = function () {
       const remainingWater = object.waterlevel; // dynamically fetched
 
       waterChart.data.datasets[0].data[0] = Math.abs(remainingWater - maxWater);
-      waterChart.data.datasets[0].data[1] = remainingWater
+      waterChart.data.datasets[0].data[1] = remainingWater;
       waterChart.update();
     });
     socketio.on('B2F_proteinweight', function (object) {
@@ -423,16 +423,18 @@ const listenToSocket = function () {
       }
     });
     socketio.on('B2F_shake', function (shakeData) {
-      if (shakeData.deviceid == 6) {
-        shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
-      } else if (shakeData.deviceid == 5) {
-        shakeChart.data.datasets[1].data.push(shakeData.shakeamount);
-      } else {
-        shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
+      if (overview) {
+        if (shakeData.deviceid == 6) {
+          shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
+        } else if (shakeData.deviceid == 5) {
+          shakeChart.data.datasets[1].data.push(shakeData.shakeamount);
+        } else {
+          shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
+        }
+        shakeChart.update();
+        waterShakeChart.update();
       }
-      shakeChart.update();
-      waterShakeChart.update();
-    })
+    });
   }
 };
 
@@ -462,7 +464,7 @@ const listenToClickRegister = function () {
           document.querySelector('#password').value = '';
           document.querySelector("#confirm-password").value = '';
         }, null, 'POST', JSON.stringify(jsonobject));
-        window.location.href='login.html'
+        window.location.href = 'login.html';
       } else {
         error.innerHTML = 'Passwords not equal';
       }
@@ -525,8 +527,8 @@ const listenToClickCreateShake = function () {
       };
       console.log(jsonobject);
       handleData(`http://${lanIP}/api/v1/createshake/`, callbackCreateshake, null, 'POST', JSON.stringify(jsonobject));
-      shakestatus.innerHTML = 'Creating shake..'
-      error.innerHTML = ''
+      shakestatus.innerHTML = 'Creating shake..';
+      error.innerHTML = '';
     } else {
       error.innerHTML = 'Please set both powder amount and water amount.';
     }
