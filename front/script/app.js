@@ -4,7 +4,7 @@ const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
 
 // #region ***  DOM references                           ***********
-let waterChart, proteinChart, creatineChart, shakeChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign, shakestatus;
+let waterChart, proteinChart, creatineChart, shakeChart, waterShakeChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign, shakestatus;
 const maxWater = 810;
 const maxProtein = 164;
 const maxCreatine = 161;
@@ -86,10 +86,11 @@ const showShakeChart = function (jsonObject) {
   // Definieer de arrays om de gegevens op te slaan
   const proteinHistory = [];
   const creatineHistory = [];
+  const WaterHistory = [];
 
   for (const shakedata of jsonObject['shake_history']) {
     // Log elk individueel item voor controle
-    console.log(shakedata);
+    // console.log(shakedata);
 
     // Voeg shakedata toe aan de juiste array op basis van DeviceID
     if (shakedata['DeviceID'] == 5) {
@@ -97,6 +98,9 @@ const showShakeChart = function (jsonObject) {
     }
     if (shakedata['DeviceID'] == 6) {
       creatineHistory.push(shakedata['Waarde']);
+    }
+    if (shakedata['DeviceID'] == 8) {
+      WaterHistory.push(shakedata['Waarde']);
     }
 
     // Gebruik de gegevens van elk item, bijvoorbeeld:
@@ -201,7 +205,7 @@ const showShakeChart = function (jsonObject) {
               if (label) {
                 label += ': ';
               }
-              label += context.raw + ' gram';
+              label += context.raw + ' g';
               return label;
             }
           }
@@ -212,6 +216,106 @@ const showShakeChart = function (jsonObject) {
 
   // Maak de shakegrafiek
   shakeChart = new Chart(document.getElementById('shakeChart'), shakeChartConfig);
+};
+
+const showWaterShakeChart = function (jsonObject) {
+  console.log(jsonObject);
+
+  // Define the array to store the water data
+  const WaterHistory = [];
+
+  for (const shakedata of jsonObject['shake_history']) {
+    // Add shakedata to the WaterHistory array based on DeviceID
+    if (shakedata['DeviceID'] == 8) {
+      WaterHistory.push(shakedata['Waarde']);
+    }
+  }
+
+  // Ensure the water data array is of the same length by padding with zeros if needed
+  const maxLength = WaterHistory.length;
+  const padArray = (arr, length) => [...arr, ...Array(length - arr.length).fill(0)];
+  const waterDataPadded = padArray(WaterHistory, maxLength);
+
+  // Create cumulative data for the water dataset
+  const cumulativeData = (data) => data.map((val, index) => data.slice(0, index + 1).reduce((a, b) => a + b, 0));
+  const waterCumulative = cumulativeData(waterDataPadded);
+
+  // Data for the water shake chart
+  const waterShakeChartData = {
+    labels: Array.from({ length: waterDataPadded.length }, (_, i) => (i + 1).toString()),
+    datasets: [
+      {
+        label: 'Water intake',
+        data: waterCumulative,
+        borderColor: '#337ab7', // New border color
+        backgroundColor: '#bce8f1', // New background color
+        borderWidth: 1
+      }
+    ]
+  };
+
+  // Configuration options for the water shake chart
+  const waterShakeChartConfig = {
+    type: 'line',
+    data: waterShakeChartData,
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Aantal shakes', // Text for the x-axis
+            color: '#333', // Color of the text
+            font: {
+              size: 14, // Font size
+              weight: 'bold' // Bold font
+            }
+          },
+          beginAtZero: true
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'milliliter', // Text for the y-axis
+            color: '#333', // Color of the text
+            font: {
+              size: 14, // Font size
+              weight: 'bold' // Bold font
+            }
+          },
+          beginAtZero: true,
+          max: 5000 // Maximum value for the y-axis
+        }
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            font: {
+              size: 14, // Font size for the legend
+              weight: 'bold' // Bold font for the legend
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              label += context.raw + ' ml';
+              return label;
+            }
+          }
+        }
+      }
+    }
+  };
+
+  // Create the water shake chart
+  waterShakeChart = new Chart(document.getElementById('waterShakeChart'), waterShakeChartConfig);
 };
 
 
@@ -265,6 +369,7 @@ const callbackCreateshake = function (data) {
 const getShakeShart = function () {
   console.log(userid);
   handleData(`http://${lanIP}/api/v1/shakehist/`, showShakeChart);
+  handleData(`http://${lanIP}/api/v1/shakehist/`, showWaterShakeChart);
 };
 // #endregion
 
@@ -322,8 +427,11 @@ const listenToSocket = function () {
         shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
       } else if (shakeData.deviceid == 5) {
         shakeChart.data.datasets[1].data.push(shakeData.shakeamount);
+      } else {
+        shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
       }
       shakeChart.update();
+      waterShakeChart.update();
     })
   }
 };
@@ -418,6 +526,7 @@ const listenToClickCreateShake = function () {
       console.log(jsonobject);
       handleData(`http://${lanIP}/api/v1/createshake/`, callbackCreateshake, null, 'POST', JSON.stringify(jsonobject));
       shakestatus.innerHTML = 'Creating shake..'
+      error.innerHTML = ''
     } else {
       error.innerHTML = 'Please set both powder amount and water amount.';
     }
@@ -440,7 +549,7 @@ const init = function () {
   bottleElement = document.querySelectorAll('.c-svg__bottle');
   error = document.querySelector('.c-error');
   sign = document.querySelector('#sign');
-  shakestatus = document.querySelector('.c-shake--status')
+  shakestatus = document.querySelector('.c-shake--status');
   userid = localStorage.getItem('userid');
   // Controleer of de gebruiker is ingelogd
   if (userid) {

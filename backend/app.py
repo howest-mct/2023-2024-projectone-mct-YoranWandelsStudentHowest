@@ -162,11 +162,10 @@ class rotaryEncoder:
         create_historiek = DataRepository.create_historiek(idpowdermotor, userid, current_datetime, self.powderamount, 'nieuwe shake aangemaakt')
         if create_historiek:
             print('New history entry created successfully.')
-        #waterpump
-        # idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
-        # create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
-        # if create_historiek:
-        #     print('New history entry created successfully.')
+            idwaterpomp = (DataRepository.get_id_sensor('Waterpomp om water te pompen'))['DeviceID']
+            create_historiek = DataRepository.create_historiek(idwaterpomp, userid, current_datetime, self.wateramount, 'nieuwe shake aangemaakt')
+            if create_historiek:
+                print('New history entry created successfully.')
         socketio.emit('B2F_shake', {'shakeamount': self.powderamount})
 
     def create_shake(self, powder='proteine', powderamount=1, wateramount=100):

@@ -770,6 +770,10 @@ input {
   justify-content: center;
   padding: $space-xl $space-m ;
 }
+  .c-chart__form--column {
+    flex-direction: column;
+    gap: $space-m;
+  }
 
 .c-chart__form--desktop {
   @include mq(bp1, max) {
