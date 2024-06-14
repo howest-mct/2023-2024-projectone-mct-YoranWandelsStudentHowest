@@ -2,7 +2,7 @@
 venv_p1/
 
 # Video files (general rule)
-*.mp4
+
 *.mov
 *.avi
 *.wmv
