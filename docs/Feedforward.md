@@ -136,3 +136,26 @@ Dit is de feedback
         - realistiche kleuren voor de charts
         - logo van muscluefuel dispenser laten staan bij kleinere schermen
     
+## Gesprek 4 (Datum: 6/14/2024)
+
+Lector: Christophe
+
+Vragen voor dit gesprek:
+
+ - vraag 1:
+
+    - weight sensors worden niet gecalibreerd
+
+ - vraag 2:
+
+    - feedback website
+
+Dit is de feedback op mijn vragen.
+
+    - feedback 1:
+
+        - de calibratie file moest absoluut gelezen worden
+
+    - feedback 1:
+
+        - label voor de charts, tonen met wat de machine bezig is als je een shake maakt

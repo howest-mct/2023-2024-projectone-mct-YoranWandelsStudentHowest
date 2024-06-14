@@ -17,6 +17,7 @@ import bcrypt # om wachtwoorden te hashen
 import pickle # om hx711 calibrate op te vragen
 import os # om hx711 calibrate op te vragen
 from subprocess import check_output
+time.sleep(10)
 
 endpoint = '/api/v1'
 
@@ -457,14 +458,14 @@ def initial_connection():
 def send_data_watersensor():
     global userid, waterdist
     # print(userid)
-    idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
-    current_datetime = datetime.datetime.now()
-    waterdist = round(watersensor.distance(), 2)
-    print(f"Water distance: {waterdist} at {current_datetime}")
+    # idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
+    # current_datetime = datetime.datetime.now()
+    # waterdist = round(watersensor.distance(), 2)
+    # print(f"Water distance: {waterdist} at {current_datetime}")
     # create_historiek = DataRepository.create_historiek(idwatersensor, userid, current_datetime, waterdist, 'water afstand sensor')
     # if create_historiek:
     #     print('New history entry created successfully.')
-    socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
+    # socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
 
 def send_data_bottlesensor():
@@ -515,7 +516,7 @@ def send_data_creatineweight():
 def read_sensors():
     GPIO.setmode(GPIO.BCM)  # Ensure correct pin numbering mode within the thread
     start_time = time.time()
-    print('**** Reading sensors ****')
+    print('**** Reading sensorssssss ****')
     while not stop_threads:
     # if (time.time() - start_time) >= 5:
         print('sending data')
@@ -562,15 +563,19 @@ if __name__ == '__main__':
         hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
         hx_creatine = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
 
-        swap_file_creatine = 'creatine.swp'
+        swap_file_creatine = '/home/user/2023-2024-projectone-mct-YoranWandelsStudentHowest/creatine.swp'
         if os.path.isfile(swap_file_creatine):
             with open(swap_file_creatine, 'rb') as swap_file:
                 hx_creatine = pickle.load(swap_file)
+                print('creatine')
 
-        swap_file_protein = 'protein.swp'
+        swap_file_protein = '/home/user/2023-2024-projectone-mct-YoranWandelsStudentHowest/protein.swp'
         if os.path.isfile(swap_file_protein):
             with open(swap_file_protein, 'rb') as swap_file:
                 hx_protein = pickle.load(swap_file)
+            print('protein')
+        else:
+            print('no protein')
 
         thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')
