@@ -4,7 +4,7 @@ const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
 
 // #region ***  DOM references                           ***********
-let waterChart, proteinChart, creatineChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign;
+let waterChart, proteinChart, creatineChart, shakeChart, waterShakeChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign, shakestatus;
 const maxWater = 810;
 const maxProtein = 164;
 const maxCreatine = 161;
@@ -82,67 +82,60 @@ const showCreatineweight = function () {
 
 const showShakeChart = function (jsonObject) {
   console.log(jsonObject);
-
-  // Definieer de arrays om de gegevens op te slaan
   const proteinHistory = [];
   const creatineHistory = [];
+  const WaterHistory = [];
 
   for (const shakedata of jsonObject['shake_history']) {
-    // Log elk individueel item voor controle
-    console.log(shakedata);
+    // console.log(shakedata);
 
-    // Voeg shakedata toe aan de juiste array op basis van DeviceID
     if (shakedata['DeviceID'] == 5) {
       proteinHistory.push(shakedata['Waarde']);
     }
     if (shakedata['DeviceID'] == 6) {
       creatineHistory.push(shakedata['Waarde']);
     }
+    if (shakedata['DeviceID'] == 8) {
+      WaterHistory.push(shakedata['Waarde']);
+    }
 
-    // Gebruik de gegevens van elk item, bijvoorbeeld:
     const actiedatum = shakedata.Actiedatum;
     const gebruikerID = shakedata.GebruikerID;
-    // Voer hier verdere acties uit met de gegevens, zoals het toevoegen aan een grafiek, enz.
   }
 
-  //  data voor de proteïne-, creatine- en watergrafieken
   const proteinData = proteinHistory;
   const creatineData = creatineHistory;
 
-  // Zorg ervoor dat de gegevensarrays van dezelfde lengte zijn door ze indien nodig aan te vullen met nullen
   const maxLength = Math.max(proteinData.length, creatineData.length);
   const padArray = (arr, length) => [...arr, ...Array(length - arr.length).fill(0)];
 
   const proteinDataPadded = padArray(proteinData, maxLength);
   const creatineDataPadded = padArray(creatineData, maxLength);
 
-  // Maak cumulatieve gegevens voor elke dataset
   const cumulativeData = (data) => data.map((val, index) => data.slice(0, index + 1).reduce((a, b) => a + b, 0));
   const proteinCumulative = cumulativeData(proteinDataPadded);
   const creatineCumulative = cumulativeData(creatineDataPadded);
 
-  // Gegevens voor de shakegrafiek met gecombineerde tooltips
   const shakeChartData = {
     labels: Array.from({ length: maxLength }, (_, i) => (i + 1).toString()),
     datasets: [
       {
         label: 'Protein shakes',
         data: proteinCumulative,
-        borderColor: '#f0ad4e', // Nieuwe randkleur
-        backgroundColor: '#f5deb3', // Nieuwe achtergrondkleur
+        borderColor: '#f0ad4e',
+        backgroundColor: '#f5deb3',
         borderWidth: 1
       },
       {
         label: 'Creatine shakes',
         data: creatineCumulative,
-        borderColor: '#999999', // Nieuwe randkleur
-        backgroundColor: '#e6e6e6', // Nieuwe achtergrondkleur
+        borderColor: '#999999',
+        backgroundColor: '#e6e6e6',
         borderWidth: 1
       }
     ]
   };
 
-  // Configuratieopties voor de shakegrafiek
   const shakeChartConfig = {
     type: 'line',
     data: shakeChartData,
@@ -152,11 +145,11 @@ const showShakeChart = function (jsonObject) {
         x: {
           title: {
             display: true,
-            text: 'Aantal shakes', // Tekst voor de x-as
-            color: '#333', // Kleur van de tekst
+            text: 'Aantal shakes',
+            color: '#333',
             font: {
-              size: 14, // Grootte van het lettertype
-              weight: 'bold' // Vetgedrukt lettertype
+              size: 14,
+              weight: 'bold'
             }
           },
           beginAtZero: true
@@ -164,24 +157,24 @@ const showShakeChart = function (jsonObject) {
         y: {
           title: {
             display: true,
-            text: 'Gram', // Tekst voor de y-as
-            color: '#333', // Kleur van de tekst
+            text: 'Gram',
+            color: '#333',
             font: {
-              size: 14, // Grootte van het lettertype
-              weight: 'bold' // Vetgedrukt lettertype
+              size: 14,
+              weight: 'bold'
             }
           },
           beginAtZero: true,
-          max: 10 // Maximale waarde van de y-as
+          max: 50
         }
       },
       plugins: {
         title: {
           display: true,
-          text: 'Weekelijkse inname', // Voeg de titel hier toe
+          text: 'Weekly intake',
           font: {
-            size: 18, // Grootte van het lettertype van de titel
-            weight: 'bold' // Vetgedrukt lettertype van de titel
+            size: 18,
+            weight: 'bold'
           }
         },
         legend: {
@@ -189,8 +182,8 @@ const showShakeChart = function (jsonObject) {
           position: 'top',
           labels: {
             font: {
-              size: 14, // Grootte van het lettertype van de legende
-              weight: 'bold' // Vetgedrukt lettertype van de legende
+              size: 14,
+              weight: 'bold'
             }
           }
         },
@@ -201,7 +194,7 @@ const showShakeChart = function (jsonObject) {
               if (label) {
                 label += ': ';
               }
-              label += context.raw + ' gram';
+              label += context.raw + ' g';
               return label;
             }
           }
@@ -210,8 +203,100 @@ const showShakeChart = function (jsonObject) {
     }
   };
 
-  // Maak de shakegrafiek
-  const shakeChart = new Chart(document.getElementById('shakeChart'), shakeChartConfig);
+  shakeChart = new Chart(document.getElementById('shakeChart'), shakeChartConfig);
+};
+
+const showWaterShakeChart = function (jsonObject) {
+  console.log(jsonObject);
+
+  const WaterHistory = [];
+
+  for (const shakedata of jsonObject['shake_history']) {
+    if (shakedata['DeviceID'] == 8) {
+      WaterHistory.push(shakedata['Waarde']);
+    }
+  }
+
+  const maxLength = WaterHistory.length;
+  const padArray = (arr, length) => [...arr, ...Array(length - arr.length).fill(0)];
+  const waterDataPadded = padArray(WaterHistory, maxLength);
+
+  const cumulativeData = (data) => data.map((val, index) => data.slice(0, index + 1).reduce((a, b) => a + b, 0));
+  const waterCumulative = cumulativeData(waterDataPadded);
+
+  const waterShakeChartData = {
+    labels: Array.from({ length: waterDataPadded.length }, (_, i) => (i + 1).toString()),
+    datasets: [
+      {
+        label: 'Water intake',
+        data: waterCumulative,
+        borderColor: '#337ab7',
+        backgroundColor: '#bce8f1',
+        borderWidth: 1
+      }
+    ]
+  };
+
+  const waterShakeChartConfig = {
+    type: 'line',
+    data: waterShakeChartData,
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Aantal shakes',
+            color: '#333',
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          },
+          beginAtZero: true
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'milliliter',
+            color: '#333',
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          },
+          beginAtZero: true,
+          max: 5000
+        }
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              label += context.raw + ' ml';
+              return label;
+            }
+          }
+        }
+      }
+    }
+  };
+
+  waterShakeChart = new Chart(document.getElementById('waterShakeChart'), waterShakeChartConfig);
 };
 
 
@@ -230,33 +315,42 @@ const callbackLogin = function (data) {
     // Doorsturen naar de overview pagina
     window.location.href = 'overview.html';
   } else if (data && data.error) {
-    error.innerHTML = data.error
+    error.innerHTML = data.error;
     // Toon een foutmelding aan de gebruiker
     // alert(data.error);
   }
 };
 
 const callbackLogout = function () {
-  console.log('logging out')
+  console.log('logging out');
   localStorage.removeItem('userid');
   userid = null;
   window.location.href = 'login.html';
-}
+};
 
-const callbackCreateshake = function () {
-  console.log('making shake')
-}
+const callbackCreateshake = function (data) {
+  console.log(data);
+  const status = data.status;
+  if (status != 'succes') {
+    error.innerHTML = status;
+    shakestatus.innerHTML = '';
+  } else {
+    error.innerHTML = '';
+    shakestatus.innerHTML = 'Shake created';
+  }
+};
 // #endregion
 
 // #region ***  Data Access - get___                     ***********
 
 // const getHistoriek = function () {
-//   handleData("http://192.168.168.169:5000/api/v1/historiek/", showHistoriek);
+//   handleData("http://${lanIP}/api/v1/historiek/", showHistoriek);
 // };
 
 const getShakeShart = function () {
-  console.log(userid)
-  handleData("http://192.168.168.169:5000/api/v1/shakehist/", showShakeChart);
+  console.log(userid);
+  handleData(`http://${lanIP}/api/v1/shakehist/`, showShakeChart);
+  handleData(`http://${lanIP}/api/v1/shakehist/`, showWaterShakeChart);
 };
 // #endregion
 
@@ -272,24 +366,24 @@ const listenToSocket = function () {
       console.log('new waterlevel');
       const remainingWater = object.waterlevel; // dynamically fetched
 
-      waterChart.data.datasets[0].data[0] = remainingWater;
-      waterChart.data.datasets[0].data[1] = maxWater - remainingWater;
+      waterChart.data.datasets[0].data[0] = Math.abs(remainingWater - maxWater);
+      waterChart.data.datasets[0].data[1] = remainingWater;
       waterChart.update();
     });
     socketio.on('B2F_proteinweight', function (object) {
       console.log('new proteinstatus');
       const proteinweight = object.weight;
       console.info(proteinweight);
-      proteinChart.data.datasets[0].data[0] = maxProtein - proteinweight;
-      proteinChart.data.datasets[0].data[1] = proteinweight;
+      proteinChart.data.datasets[0].data[0] = proteinweight;
+      proteinChart.data.datasets[0].data[1] = maxProtein - proteinweight;
       proteinChart.update();
     });
     socketio.on('B2F_creatineweight', function (object) {
       console.log('new creatinestatus');
       const creatineweight = object.weight;
       console.info(creatineweight);
-      creatineChart.data.datasets[0].data[0] = maxCreatine - creatineweight;
-      creatineChart.data.datasets[0].data[1] = creatineweight;
+      creatineChart.data.datasets[0].data[0] = creatineweight;
+      creatineChart.data.datasets[0].data[1] = maxCreatine - creatineweight;
       creatineChart.update();
     });
   }
@@ -307,6 +401,19 @@ const listenToSocket = function () {
         bottleElement.forEach(element => {
           element.classList.remove('c-svg__bottle--active');
         });
+      }
+    });
+    socketio.on('B2F_shake', function (shakeData) {
+      if (overview) {
+        if (shakeData.deviceid == 6) {
+          shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
+        } else if (shakeData.deviceid == 5) {
+          shakeChart.data.datasets[1].data.push(shakeData.shakeamount);
+        } else {
+          shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
+        }
+        shakeChart.update();
+        waterShakeChart.update();
       }
     });
   }
@@ -330,7 +437,7 @@ const listenToClickRegister = function () {
           Wachtwoord: password,
           Email: email
         };
-        handleData("http://192.168.168.169:5000/api/v1/gebruiker/", function () {
+        handleData(`http://${lanIP}/api/v1/gebruiker/`, function () {
           console.log('nieuwe gebruiker toegevoegt');
           error.innerHTML = '';
           document.querySelector('#gebruikersnaam').value = '';
@@ -338,6 +445,7 @@ const listenToClickRegister = function () {
           document.querySelector('#password').value = '';
           document.querySelector("#confirm-password").value = '';
         }, null, 'POST', JSON.stringify(jsonobject));
+        window.location.href = 'login.html';
       } else {
         error.innerHTML = 'Passwords not equal';
       }
@@ -357,7 +465,7 @@ const listenToClickLogin = function () {
       Email: email,
       Wachtwoord: password
     };
-    handleData("http://192.168.168.169:5000/api/v1/inloggen/", callbackLogin, null, 'POST', JSON.stringify(jsonobject));
+    handleData(`http://${lanIP}/api/v1/inloggen/`, callbackLogin, null, 'POST', JSON.stringify(jsonobject));
     // window.location.href = 'overview.html';
   });
 };
@@ -367,37 +475,47 @@ const listenToClickLogout = function () {
   button.addEventListener('click', function () {
     if (userid) {
       // Als de gebruiker is ingelogd, uitloggen en naar de inlogpagina navigeren
-      handleData(`http://192.168.168.169:5000/api/v1/uitloggen/`, callbackLogout, null, 'POST', null);
+      handleData(`http://${lanIP}/api/v1/uitloggen/`, callbackLogout, null, 'POST', null);
     } else {
       // Als de gebruiker niet is ingelogd, gewoon naar de inlogpagina navigeren
-      window.location.href = 'login.html'
+      window.location.href = 'login.html';
     }
   });
-}
+};
 
 const listenToClickCreateShake = function () {
   const button = document.querySelector('.js-shake');
   button.addEventListener('click', function () {
     const radioButtons = document.getElementsByName('shake-type');
-    const inputAmount = document.getElementById('amount')
-    const inputWateramount = document.getElementById('water-amount')
+    const inputAmount = document.getElementById('amount');
+    const inputWateramount = document.getElementById('water-amount');
     let powder;
+
     radioButtons.forEach(button => {
       if (button.checked) {
         powder = button.value;
       }
     });
-    const powderAmount = inputAmount.value
-    const waterAmount = inputWateramount.value
-    const jsonobject = {
-      Powder: powder,
-      PowderAmount: powderAmount,
-      waterAmount: waterAmount
-    };
-    console.log(jsonobject)
-    handleData('http://192.168.168.169:5000/api/v1/createshake/', callbackCreateshake, null, 'POST', JSON.stringify(jsonobject));
+
+    const powderAmount = inputAmount.value;
+    const waterAmount = inputWateramount.value;
+
+    if (powderAmount && waterAmount) {
+      const jsonobject = {
+        Powder: powder,
+        PowderAmount: powderAmount,
+        WaterAmount: waterAmount
+      };
+      console.log(jsonobject);
+      handleData(`http://${lanIP}/api/v1/createshake/`, callbackCreateshake, null, 'POST', JSON.stringify(jsonobject));
+      shakestatus.innerHTML = 'Creating shake..';
+      error.innerHTML = '';
+    } else {
+      error.innerHTML = 'Please set both powder amount and water amount.';
+    }
   });
-}
+};
+
 // #endregion
 
 // #region ***  Init / DOMContentLoaded                  ***********
@@ -413,7 +531,8 @@ const init = function () {
   statusElement = document.querySelector('#status');
   bottleElement = document.querySelectorAll('.c-svg__bottle');
   error = document.querySelector('.c-error');
-  sign = document.querySelector('#sign')
+  sign = document.querySelector('#sign');
+  shakestatus = document.querySelector('.c-shake--status');
   userid = localStorage.getItem('userid');
   // Controleer of de gebruiker is ingelogd
   if (userid) {

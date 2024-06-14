@@ -619,6 +619,11 @@ input {
   padding: 3.4285714286rem 1.7142857143rem;
 }
 
+.c-chart__form--column {
+  flex-direction: column;
+  gap: 1.7142857143rem;
+}
+
 @media (max-width: 36.0625em) {
   .c-chart__form--desktop {
     display: none;
