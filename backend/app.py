@@ -252,7 +252,7 @@ class rotaryEncoder:
             if self.counter == 0:
                 self.lcd.clear_display()
                 ips = check_output(['hostname', '--all-ip-addresses']).decode() #decode: bytes -> string
-                self.lcd.write_message(ips[16:29])
+                self.lcd.write_message(ips[16:30])
             elif self.counter == 1:
                 self.lcd.clear_display()
                 self.lcd.write_message('Maak een shake')
