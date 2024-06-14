@@ -156,6 +156,6 @@ Dit is de feedback op mijn vragen.
 
         - de calibratie file moest absoluut gelezen worden
 
-    - feedback 1:
+    - feedback 2:
 
         - label voor de charts, tonen met wat de machine bezig is als je een shake maakt
