@@ -17,7 +17,7 @@ import bcrypt # om wachtwoorden te hashen
 import pickle # om hx711 calibrate op te vragen
 import os # om hx711 calibrate op te vragen
 from subprocess import check_output
-time.sleep(10)
+time.sleep(5)
 
 endpoint = '/api/v1'
 
@@ -74,9 +74,9 @@ userid = 1
 bottlestatus = 0
 #weight
 proteinweight = 0
-caseproteinweight = 168
+caseproteinweight = 160
 creatineweight = 0
-casecreatineweight = 159
+casecreatineweight = 160
 
 #water
 waterdist = 0 #max 24
@@ -308,9 +308,9 @@ class rotaryEncoder:
             elif self.clickc3 == True:
                 global stop_threads
                 print(f'Powder: {self.powder}, Amount: {self.powderamount}g, Water: {self.wateramount}ml')
-                stop_threads = True
+                # stop_threads = True
                 self.create_shake(self.powder, self.powderamount, self.wateramount)
-                stop_threads = False
+                # stop_threads = False
                 # Restart the thread
                 start_thread()
                 self.clickc3 = False
@@ -405,13 +405,11 @@ def create_shake_front():
                     # Bereken het aantal stappen voor de poederdispenser
                     stappen_per_gram = 19505 
                     benodigde_stappen = stappen_per_gram * powderAmount
-                    
                     # Start de poederdispenser voor het benodigde aantal stappen
                     if powder == 'Protein':
                         Proteinmotor.draaien_links(benodigde_stappen)
                     else:
                         Creatinemotor.draaien_rechts(benodigde_stappen)
-
                     # Start de waterpomp
                     waterpump.turn_on()
                     # Wacht voor de berekende tijd om water te doseren
@@ -445,6 +443,12 @@ def create_shake_front():
         else:
             return jsonify(status='No bottle present'), 200
 
+@app.route(endpoint + '/shutdown/', methods=["POST"])
+def shutdown():
+    if request.method == 'POST':
+        os.system("sudo shutdown -h now")
+        return jsonify(status='shutdown'), 200
+
 
 
 # SOCKET IO
@@ -457,15 +461,15 @@ def initial_connection():
 
 def send_data_watersensor():
     global userid, waterdist
-    # print(userid)
-    # idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
-    # current_datetime = datetime.datetime.now()
-    # waterdist = round(watersensor.distance(), 2)
-    # print(f"Water distance: {waterdist} at {current_datetime}")
-    # create_historiek = DataRepository.create_historiek(idwatersensor, userid, current_datetime, waterdist, 'water afstand sensor')
-    # if create_historiek:
-    #     print('New history entry created successfully.')
-    # socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
+    print(userid)
+    idwatersensor = (DataRepository.get_id_sensor('Afstand meten meten om te kijken hoeveel water er nog in de bidon zit'))['DeviceID']
+    current_datetime = datetime.datetime.now()
+    waterdist = round(watersensor.distance(), 2)
+    print(f"Water distance: {waterdist} at {current_datetime}")
+    create_historiek = DataRepository.create_historiek(idwatersensor, userid, current_datetime, waterdist, 'water afstand sensor')
+    if create_historiek:
+        print('New history entry created successfully.')
+    socketio.emit('B2F_waterlevel', {'waterlevel': waterdist})
 
 
 def send_data_bottlesensor():
@@ -473,11 +477,11 @@ def send_data_bottlesensor():
     idbottlesensor = (DataRepository.get_id_sensor('Afstand meten om te kijken of er een fles onder de machine staat'))['DeviceID']
     current_datetime = datetime.datetime.now()
     bottledist = round(bottlesensor.distance(), 2)
-    bottlestatus = 1 if bottledist < 100 else 0
+    bottlestatus = 1 if bottledist < 20 else 0
     print(f"Bottle acknowledged - distance: {bottledist} at {current_datetime}")
-    # create_historiek = DataRepository.create_historiek(idbottlesensor, userid, current_datetime, bottledist, 'bottle sensor ')
-    # if create_historiek:
-    #     print('New history entry created successfully.')
+    create_historiek = DataRepository.create_historiek(idbottlesensor, userid, current_datetime, bottledist, 'bottle sensor ')
+    if create_historiek:
+        print('New history entry created successfully.')
     socketio.emit('B2F_bottlestatus', {'status': bottlestatus})
 
 
@@ -487,14 +491,21 @@ def send_data_proteinweight():
         idproteinweight = (DataRepository.get_id_sensor(
             'Gewicht meten van de proteine'))['DeviceID']
         current_datetime = datetime.datetime.now()
-        proteinweight = round(hx_protein.get_weight_mean(20) - caseproteinweight,2)
-        print(f"Protein Weight: {proteinweight} at {current_datetime}")
-        # create_historiek = DataRepository.create_historiek(idproteinweight, userid, current_datetime, proteinweight, 'protein weight')
-        # if create_historiek:
-        #     print('New history entry created successfully.')
-        socketio.emit('B2F_proteinweight', {'weight': proteinweight})
+        calculated_weight = round(hx_protein.get_weight_mean(20) - caseproteinweight, 2)
+        
+        # Check if the calculated weight is below -100
+        if calculated_weight >= -100:
+            proteinweight = calculated_weight
+            print(f"Protein Weight: {proteinweight} at {current_datetime}")
+            create_historiek = DataRepository.create_historiek(idproteinweight, userid, current_datetime, proteinweight, 'protein weight')
+            if create_historiek:
+                print('New history entry created successfully.')
+            socketio.emit('B2F_proteinweight', {'weight': proteinweight})
+        else:
+            print(f"Invalid protein weight value: {calculated_weight}, not updating proteinweight.")
     except Exception as e:
         print(f'Protein weight error: {e}')
+
 
 
 def send_data_creatineweight():
@@ -503,14 +514,21 @@ def send_data_creatineweight():
         idcreateineweight = (DataRepository.get_id_sensor(
             'Gewicht meten van de creatine'))['DeviceID']
         current_datetime = datetime.datetime.now()
-        creatineweight = round(hx_creatine.get_weight_mean(20) - casecreatineweight,2)
-        print(f"Creatine Weight: {creatineweight} at {current_datetime}")
-        # create_historiek = DataRepository.create_historiek(idcreateineweight, userid, current_datetime, creatineweight, 'creatine weight')
-        # if create_historiek:
-        #     print('New history entry created successfully.')
-        socketio.emit('B2F_creatineweight', {'weight': creatineweight})
+        calculated_weight = round(hx_creatine.get_weight_mean(20) - casecreatineweight, 2)
+        
+        # Check if the calculated weight is below -100
+        if calculated_weight >= -100:
+            creatineweight = calculated_weight
+            print(f"Creatine Weight: {creatineweight} at {current_datetime}")
+            create_historiek = DataRepository.create_historiek(idcreateineweight, userid, current_datetime, creatineweight, 'creatine weight')
+            if create_historiek:
+                print('New history entry created successfully.')
+            socketio.emit('B2F_creatineweight', {'weight': creatineweight})
+        else:
+            print(f"Invalid creatine weight value: {calculated_weight}, not updating creatineweight.")
     except Exception as e:
         print(f'Creatine weight error: {e}')
+
 
 
 def read_sensors():
@@ -518,13 +536,11 @@ def read_sensors():
     start_time = time.time()
     print('**** Reading sensorssssss ****')
     while not stop_threads:
-    # if (time.time() - start_time) >= 5:
         print('sending data')
         send_data_watersensor()
         send_data_bottlesensor()
         send_data_proteinweight()
         send_data_creatineweight()
-        # start_time = time.time()
 
 
 def start_thread():
@@ -534,13 +550,22 @@ def start_thread():
 
 
 def my_callback_one(channel):
-    print('Button pressed! Shutting down...')
-    # time.sleep(1)  # Add a short delay to ensure the message is printed before shutting down
-    # os.system("sudo shutdown -h now")
+    start_time = time.time()
+    while GPIO.input(btn) == GPIO.LOW:
+        time.sleep(0.1)
+
+    press_duration = time.time() - start_time
+
+
+    if press_duration >= 2:
+        print('Button pressed for 1 second or more! Shutting down...')
+        os.system("sudo shutdown -h now")
+    else:
+        print('Button pressed but not long enough. Ignored.')
 
 
 GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.add_event_detect(btn, GPIO.RISING, bouncetime=200)
+GPIO.add_event_detect(btn, GPIO.FALLING, bouncetime=200)
 GPIO.add_event_callback(btn, my_callback_one)
 
 if __name__ == '__main__':
@@ -579,20 +604,6 @@ if __name__ == '__main__':
 
         thread = start_thread()
         socketio.run(app, debug=False, host='0.0.0.0')
-        # while True:
-        #     try:
-        #         # current_datetime = datetime.datetime.now()
-        #         # proteinweight = hx_protein.get_weight_mean(20)
-        #         # print(f"Protein Weight: {proteinweight} at {current_datetime}")
-        #         # current_datetime = datetime.datetime.now()
-        #         # creatineweight = hx_creatine.get_weight_mean(20)
-        #         # print(f"Creatine Weight: {creatineweight} at {current_datetime}")
-        #         # waterpump.turn_on()
-        #         # Proteinmotor.draaien_links()
-        #         time.sleep(1)
-        #     except Exception as ex:
-        #         print(ex)
-
     except KeyboardInterrupt:
         print('KeyboardInterrupt exception is caught')
     finally:

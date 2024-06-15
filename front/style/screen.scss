@@ -636,11 +636,27 @@ input {
   margin: 0;
   color: white;
   font-weight: 700;
-    @include mq(bp2, max) {
+    @include mq(bp3, max) {
     display: none;
   }
 }
 
+/*
+  Components: shutdown
+*/
+
+.shutdown-icon {
+  fill: #000000; /* Startkleur van de SVG */
+  width: 20px; /* Breedte van de SVG */
+  height: 20px; /* Hoogte van de SVG */
+  transition: fill 0.3s, transform 0.3s; /* Voeg een overgang toe voor kleur en grootte */
+  cursor: pointer; /* Verander de cursor naar pointer bij hover */
+}
+
+.shutdown-icon:hover {
+  fill: #FF0000; /* Kleur bij hover */
+  transform: scale(1.2); /* Vergroot de SVG bij hover */
+}
 /*
   Components: account
 */
@@ -655,14 +671,19 @@ input {
   border: 2px solid $color-primary;
   border-radius: $space-l;
   padding: $space-xs $space-m;
+  display: flex;
+  align-items: center;
 
-  @include mq(bp1, max) {
+  @include mq(bp2, max) {
     display: none;
   }
 
   font-weight: 700;
   color: $color-primary;
   background-color: transparent;
+}
+.c-acc__item--shutdown {
+  border: none;
 }
 
 .c-acc__item--active {
@@ -767,7 +788,8 @@ input {
   border-radius: 10px;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* Ensure vertical stacking */
+  align-items: center; /* Center align the items */
   padding: $space-xl $space-m ;
 }
   .c-chart__form--column {
@@ -939,6 +961,10 @@ input {
 
 .c-nav__link:hover {
   color: $oc-blue-9;
+}
+
+.c-nav__link--active:any-link{
+  color: $color-primary;
 }
 
 /*

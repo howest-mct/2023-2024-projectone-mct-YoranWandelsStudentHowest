@@ -4,17 +4,19 @@ const lanIP = `${window.location.hostname}:5000`;
 const socketio = io(lanIP);
 
 // #region ***  DOM references                           ***********
-let waterChart, proteinChart, creatineChart, shakeChart, waterShakeChart, register, login, shake, overview, statusElement, bottleElement, error, userid, sign, shakestatus;
-const maxWater = 810;
-const maxProtein = 164;
-const maxCreatine = 161;
+let waterChart, proteinChart, creatineChart, shakeChart, waterShakeChart,
+register, login, shake, overview, statusElement, bottleElement, error, userid, sign, shakestatus, shakelink, homelink;
+
+const maxWater = 24;
+const maxProtein = 30;
+const maxCreatine = 30;
 let proteinHistory = [];
 let creatineHistory = [];
 // #endregion
 
 // #region ***  Callback-Visualisation - show___         ***********
 const showWaterlevel = function () {
-  const remainingWater = 400;
+  const remainingWater = 20;
   // remainingWater = jsonObject
   const data = {
     labels: ['Remaining Water'],
@@ -339,6 +341,9 @@ const callbackCreateshake = function (data) {
     shakestatus.innerHTML = 'Shake created';
   }
 };
+const callbackShutdown = function (data) {
+  console.log('shutting down..')
+}
 // #endregion
 
 // #region ***  Data Access - get___                     ***********
@@ -386,8 +391,19 @@ const listenToSocket = function () {
       creatineChart.data.datasets[0].data[1] = maxCreatine - creatineweight;
       creatineChart.update();
     });
+    socketio.on('B2F_shake', function (shakeData) {
+      if (shakeData.deviceid == 6) {
+        shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
+      } else if (shakeData.deviceid == 5) {
+        shakeChart.data.datasets[1].data.push(shakeData.shakeamount);
+      } else {
+        shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
+      }
+      shakeChart.update();
+      waterShakeChart.update();
+    });
   }
-  if (shake) {
+  if (shakestatus) {
     socketio.on('B2F_bottlestatus', function (object) {
       console.log('new bottlestatus');
       const bottlestatus = object.status;
@@ -403,18 +419,9 @@ const listenToSocket = function () {
         });
       }
     });
-    socketio.on('B2F_shake', function (shakeData) {
-      if (overview) {
-        if (shakeData.deviceid == 6) {
-          shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
-        } else if (shakeData.deviceid == 5) {
-          shakeChart.data.datasets[1].data.push(shakeData.shakeamount);
-        } else {
-          shakeChart.data.datasets[0].data.push(shakeData.shakeamount);
-        }
-        shakeChart.update();
-        waterShakeChart.update();
-      }
+    socketio.on('B2F_shake_status', function (status) {
+      console.log(status);
+      shakestatus.innerHTML = status.status;
     });
   }
 };
@@ -515,6 +522,13 @@ const listenToClickCreateShake = function () {
     }
   });
 };
+const listenToClickShutdown = function () {
+  const button = document.querySelector('.js-shutdown')
+  button.addEventListener('click', function(){
+    console.log('shutdown')
+    handleData(`http://${lanIP}/api/v1/shutdown/`, callbackShutdown, null, 'POST', null);
+  })
+}
 
 // #endregion
 
@@ -533,6 +547,17 @@ const init = function () {
   error = document.querySelector('.c-error');
   sign = document.querySelector('#sign');
   shakestatus = document.querySelector('.c-shake--status');
+  shakelink = document.querySelector('.js-shake__link');
+  homelink = document.querySelector('.js-overview__link')
+  if(overview) {
+    homelink.classList.add('c-nav__link--active');
+    shakelink.classList.remove('c-nav__link--active');
+  }
+  if (shakestatus) {
+    shakelink.classList.add('c-nav__link--active');
+    console.log('status')
+    homelink.classList.remove('c-nav__link--active');
+  }
   userid = localStorage.getItem('userid');
   // Controleer of de gebruiker is ingelogd
   if (userid) {
@@ -541,6 +566,7 @@ const init = function () {
   listenToUI();
   listenToSocket();
   listenToClickLogout();
+  listenToClickShutdown();
   if (overview) {
     showWaterlevel();
     showProteinweight();

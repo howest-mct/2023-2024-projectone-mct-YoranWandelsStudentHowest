@@ -158,4 +158,4 @@ Dit is de feedback op mijn vragen.
 
     - feedback 2:
 
-        - label voor de charts, tonen met wat de machine bezig is als je een shake maakt
+        - label voor de charts, tonen met wat de machine bezig is als je een shake maakt, shutdown button toevoegen, wanneer er een shake gemaakt word moet de code in een aparte thread zodat er nog andere functies kunnen gebeuren, tonen op welke pagina je zit

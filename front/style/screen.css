@@ -485,10 +485,26 @@ input {
   color: white;
   font-weight: 700;
 }
-@media (max-width: 48.0625em) {
+@media (max-width: 62.0625em) {
   .c-header__name {
     display: none;
   }
+}
+
+/*
+  Components: shutdown
+*/
+.shutdown-icon {
+  fill: #000000; /* Startkleur van de SVG */
+  width: 20px; /* Breedte van de SVG */
+  height: 20px; /* Hoogte van de SVG */
+  transition: fill 0.3s, transform 0.3s; /* Voeg een overgang toe voor kleur en grootte */
+  cursor: pointer; /* Verander de cursor naar pointer bij hover */
+}
+
+.shutdown-icon:hover {
+  fill: #FF0000; /* Kleur bij hover */
+  transform: scale(1.2); /* Vergroot de SVG bij hover */
 }
 
 /*
@@ -504,14 +520,20 @@ input {
   border: 2px solid #228be6;
   border-radius: 2.2857142857rem;
   padding: 0.8571428571rem 1.7142857143rem;
+  display: flex;
+  align-items: center;
   font-weight: 700;
   color: #228be6;
   background-color: transparent;
 }
-@media (max-width: 36.0625em) {
+@media (max-width: 48.0625em) {
   .c-acc__item {
     display: none;
   }
+}
+
+.c-acc__item--shutdown {
+  border: none;
 }
 
 .c-acc__item--active {
@@ -615,7 +637,8 @@ input {
   border-radius: 10px;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* Ensure vertical stacking */
+  align-items: center; /* Center align the items */
   padding: 3.4285714286rem 1.7142857143rem;
 }
 
@@ -784,6 +807,14 @@ input {
 
 .c-nav__link:hover {
   color: #1864ab;
+}
+
+.c-nav__link--active:-moz-any-link {
+  color: #228be6;
+}
+
+.c-nav__link--active:any-link {
+  color: #228be6;
 }
 
 /*
