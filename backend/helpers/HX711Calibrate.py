@@ -16,7 +16,7 @@ try:
     GPIO.setmode(GPIO.BCM)  # set GPIO pin mode to BCM numbering
     # Create an object hx which represents your real hx711 chip
     # Required input parameters are only 'dout_pin' and 'pd_sck_pin'
-    hx = HX711(dout_pin=hx2_dt, pd_sck_pin=hx2_clck)
+    hx = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
     # Check if we have swap file. If yes that suggest that the program was not
     # terminated proprly (power failure). We load the latest state.
     swap_file_name = 'swap_file.swp'

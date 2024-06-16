@@ -420,7 +420,7 @@ def create_shake_front():
                     stop_threads = False
                     # Restart the thread
                     start_thread()
-                    if powder == 'protein':
+                    if powder == 'Protein':
                         idpowdermotor = (DataRepository.get_id_sensor('Stappenmotor om de auger te laten draaien van de proteine'))['DeviceID']
                     else:
                         idpowdermotor = (DataRepository.get_id_sensor('Stappenmotor om de auger te laten draaien van de creatine'))['DeviceID']
