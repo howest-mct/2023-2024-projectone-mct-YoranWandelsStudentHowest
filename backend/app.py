@@ -252,7 +252,14 @@ class rotaryEncoder:
             if self.counter == 0:
                 self.lcd.clear_display()
                 ips = check_output(['hostname', '--all-ip-addresses']).decode() #decode: bytes -> string
-                self.lcd.write_message(ips[16:30])
+                ip_list = ips.split()
+                if ip_list:
+                    ip_address = ip_list[0]  # Neem het eerste IP-adres
+                else:
+                    ip_address = "No IP address"  # Fallback als er geen IP-adres is
+                
+                self.lcd.clear_display()
+                self.lcd.write_message(ip_address)  # Schrijf het IP-adres naar het LCD
             elif self.counter == 1:
                 self.lcd.clear_display()
                 self.lcd.write_message('Maak een shake')
@@ -582,7 +589,14 @@ if __name__ == '__main__':
         lcd = LCD(rs, enable, pcf)
         lcd.clear_display()
         ips = check_output(['hostname', '--all-ip-addresses']).decode() #decode: bytes -> string
-        lcd.write_message(ips[16:30])
+        ip_list = ips.split()
+        if ip_list:
+            ip_address = ip_list[0]  # Neem het eerste IP-adres
+        else:
+            ip_address = "No IP address"  # Fallback als er geen IP-adres is
+        
+        lcd.clear_display()
+        lcd.write_message(ip_address)  # Schrijf het IP-adres naar het LCD
         rotary = rotaryEncoder(rot_switch, rot_dt, rot_clk, lcd, waterpump, Proteinmotor, Creatinemotor)
 
         hx_protein = HX711(dout_pin=hx1_dt, pd_sck_pin=hx1_clck)
