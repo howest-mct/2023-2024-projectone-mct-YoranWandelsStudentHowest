@@ -265,9 +265,9 @@ class rotaryEncoder:
                 self.lcd.write_message('Maak een shake')
             else:
                 self.lcd.clear_display()
-                self.lcd.write_message(f'Protein: {proteinweight}')
+                self.lcd.write_message(f'Protein: {proteinweight} g')
                 self.lcd.send_instruction(0b11000000) # new line
-                self.lcd.write_message(f'Creatine: {creatineweight}')
+                self.lcd.write_message(f'Creatine: {creatineweight} g')
                 time.sleep(3)  # Display for 3 seconds
 
                 # Display water
@@ -291,7 +291,6 @@ class rotaryEncoder:
                 self.lcd.write_message(f'Water level:')
                 self.lcd.send_instruction(0b11000000) # new line
                 self.lcd.write_message(water_level_description)
-                time.sleep(3)  # 3 seconden weergeven
 
 
 
